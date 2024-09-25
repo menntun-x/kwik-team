@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Note Maker",
+  "version": "1.0",
+  "description": "A new tab note-taking interface with full formatting capabilities.",
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "permissions": ["storage"],
+  "icons": {
+
+  },
+  "action": {
+    "default_popup": "index.html"
+  }
+}

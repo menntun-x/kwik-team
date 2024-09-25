@@ -1,0 +1,26 @@
+{
+  "name": "chrome-note-extension",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js"
+  },
+  "dependencies": {
+    "quill": "^2.0.2",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-quill": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.272",
+    "@types/react": "^18.3.9",
+    "@types/react-dom": "^18.3.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^6.0.0",
+    "style-loader": "^3.0.0",
+    "ts-loader": "^9.0.0",
+    "typescript": "^4.0.0",
+    "webpack": "^5.0.0",
+    "webpack-cli": "^4.0.0"
+  }
+}
