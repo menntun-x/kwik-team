@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.bubble.css"; // Use bubble or dark theme styles
+import "react-quill/dist/quill.snow.css"; // Import snow theme styles
 import { getStoredNotes, saveNotes } from "../utils/storage";
 
 const NoteEditor: React.FC = () => {
@@ -45,16 +45,27 @@ const NoteEditor: React.FC = () => {
   return (
     <div className="note-editor-container">
       <ReactQuill
-        theme="bubble"
+        theme="snow" // Use snow theme for Quill
         value={notes}
         onChange={handleNoteChange}
         placeholder="Write your notes here..."
+        modules={{
+          toolbar: [
+            [{ header: [1, 2, false] }], // Heading levels
+            ["bold", "italic", "underline", "strike"], // Text formatting
+            [{ list: "ordered" }, { list: "bullet" }], // Lists
+            ["blockquote", "code-block"], // Block quote and code block
+            ["link", "image"], // Link and image
+            ["clean"], // Remove formatting button
+          ],
+        }}
       />
       <footer>
-        <div>Total characters: {notes.length}</div>
-        <button onClick={printNotes} style={{ backgroundColor: '#ef233c', color: '#fff', border: 'none', padding: '10px', borderRadius: '5px', cursor: 'pointer' }}>
+        <div className="footer-info">Total characters: {notes.length}</div>
+        <button onClick={printNotes} className="print-button">
           Print
         </button>
+        <div className="footer-credits">Made with ♥ by Raj Kumar Dubey</div>
       </footer>
     </div>
   );
