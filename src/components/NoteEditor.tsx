@@ -9,6 +9,7 @@ const themes = ["dark", "light", "solarized", "high-contrast", "pastel"]; // Ava
 const NoteEditor: React.FC = () => {
   const [notes, setNotes] = useState<string>("");
   const [theme, setTheme] = useState<string>("dark"); // Default theme
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false); // Fullscreen state
 
   useEffect(() => {
     // Load stored notes and theme when the component mounts
@@ -54,6 +55,42 @@ const NoteEditor: React.FC = () => {
     }
   };
 
+  const toggleFullscreen = () => {
+    const elem = document.documentElement; // Get the entire document element
+
+    if (!isFullscreen) {
+      // Request fullscreen
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if ((elem as any).mozRequestFullScreen) {
+        // Firefox
+        (elem as any).mozRequestFullScreen();
+      } else if ((elem as any).webkitRequestFullscreen) {
+        // Chrome, Safari, Opera
+        (elem as any).webkitRequestFullscreen();
+      } else if ((elem as any).msRequestFullscreen) {
+        // IE/Edge
+        (elem as any).msRequestFullscreen();
+      }
+    } else {
+      // Exit fullscreen
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if ((document as any).mozCancelFullScreen) {
+        // Firefox
+        (document as any).mozCancelFullScreen();
+      } else if ((document as any).webkitExitFullscreen) {
+        // Chrome, Safari, Opera
+        (document as any).webkitExitFullscreen();
+      } else if ((document as any).msExitFullscreen) {
+        // IE/Edge
+        (document as any).msExitFullscreen();
+      }
+    }
+
+    setIsFullscreen(!isFullscreen); // Toggle fullscreen state
+  };
+
   return (
     <div className={`note-editor-container ${theme}`}>
       <ReactQuill
@@ -85,12 +122,18 @@ const NoteEditor: React.FC = () => {
               onChange={(e) => handleThemeChange(e.target.value)}
             >
               {themes.map((t) => (
-                <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+                <option key={t} value={t}>
+                  {t.charAt(0).toUpperCase() + t.slice(1)}
+                </option>
               ))}
             </select>
           </div>
         </div>
-
+        <div>
+          <button onClick={toggleFullscreen} className="fullscreen-button">
+            {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+          </button>
+        </div>
         <button onClick={printNotes} className="print-button">
           Print
         </button>
