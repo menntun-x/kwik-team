@@ -1,36 +1,64 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; // Import snow theme styles
+import "react-quill/dist/quill.snow.css";
 import { getStoredNotes, saveNotes } from "../utils/storage";
-import { getStoredTheme, saveTheme } from "../utils/theme"; // New theme storage utils
+import { getStoredTheme, saveTheme } from "../utils/theme";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExpand, faCompress } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExpand,
+  faCompress,
+  faBars,
+  faTimes,
+  faPalette,
+  faPrint,
+} from "@fortawesome/free-solid-svg-icons";
 
-const themes = ["dark", "light", "solarized", "high-contrast", "pastel"]; // Available themes
+const themes = ["dark", "light", "solarized", "high-contrast", "pastel"];
 
 const NoteEditor: React.FC = () => {
   const [notes, setNotes] = useState<string>("");
-  const [theme, setTheme] = useState<string>("dark"); // Default theme
-  const [isFullscreen, setIsFullscreen] = useState<boolean>(false); // Fullscreen state
+  const [theme, setTheme] = useState<string>("dark");
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Load stored notes and theme when the component mounts
     getStoredNotes().then((storedNotes) => {
       if (storedNotes) setNotes(storedNotes);
     });
     getStoredTheme().then((storedTheme) => {
       if (storedTheme) setTheme(storedTheme);
     });
-  }, []);
+
+    // Close sidebar when clicking outside of it
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node)
+      ) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    if (isSidebarOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isSidebarOpen]);
 
   const handleNoteChange = (value: string) => {
     setNotes(value);
-    saveNotes(value); // Save notes to storage
+    saveNotes(value);
   };
 
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
-    saveTheme(newTheme); // Save theme to storage
+    saveTheme(newTheme);
   };
 
   const printNotes = () => {
@@ -58,90 +86,104 @@ const NoteEditor: React.FC = () => {
   };
 
   const toggleFullscreen = () => {
-    const elem = document.documentElement; // Get the entire document element
+    const elem = document.documentElement;
 
     if (!isFullscreen) {
-      // Request fullscreen
       if (elem.requestFullscreen) {
         elem.requestFullscreen();
       } else if ((elem as any).mozRequestFullScreen) {
-        // Firefox
         (elem as any).mozRequestFullScreen();
       } else if ((elem as any).webkitRequestFullscreen) {
-        // Chrome, Safari, Opera
         (elem as any).webkitRequestFullscreen();
       } else if ((elem as any).msRequestFullscreen) {
-        // IE/Edge
         (elem as any).msRequestFullscreen();
       }
     } else {
-      // Exit fullscreen
       if (document.exitFullscreen) {
         document.exitFullscreen();
       } else if ((document as any).mozCancelFullScreen) {
-        // Firefox
         (document as any).mozCancelFullScreen();
       } else if ((document as any).webkitExitFullscreen) {
-        // Chrome, Safari, Opera
         (document as any).webkitExitFullscreen();
       } else if ((document as any).msExitFullscreen) {
-        // IE/Edge
         (document as any).msExitFullscreen();
       }
     }
 
-    setIsFullscreen(!isFullscreen); // Toggle fullscreen state
+    setIsFullscreen(!isFullscreen);
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
   return (
     <div className={`note-editor-container ${theme}`}>
       <ReactQuill
-        theme="snow" // Use snow theme for Quill
+        theme="snow"
         value={notes}
         onChange={handleNoteChange}
         placeholder="Write your notes here..."
         modules={{
           toolbar: [
-            [{ header: [1, 2, false] }], // Heading levels
-            ["bold", "italic", "underline", "strike"], // Text formatting
-            [{ list: "ordered" }, { list: "bullet" }], // Lists
-            ["blockquote", "code-block"], // Block quote and code block
-            ["link", "image"], // Link and image
-            ["clean"], // Remove formatting button
+            [{ header: [1, 2, false] }],
+            ["bold", "italic", "underline", "strike"],
+            [{ list: "ordered" }, { list: "bullet" }],
+            ["blockquote", "code-block"],
+            ["link", "image"],
+            ["clean"],
           ],
         }}
       />
 
-      <footer>
+      {!isSidebarOpen && (
+        <button className="hamburger-icon" onClick={toggleSidebar}>
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+      )}
+
+      <div
+        className={`sidebar ${isSidebarOpen ? "open" : ""} ${theme}`}
+        ref={sidebarRef}
+      >
         <div className="theme-selector">
-          <label htmlFor="theme-select" className="theme-label">
-            Theme:
-          </label>
-          <div className="custom-select">
-            <select
-              id="theme-select"
-              value={theme}
-              onChange={(e) => handleThemeChange(e.target.value)}
-            >
-              {themes.map((t) => (
-                <option key={t} value={t}>
+          <h3>Select Theme</h3>
+          <div className="theme-options">
+            {themes.map((t) => (
+              <label
+                key={t}
+                className={`theme-option ${t === theme ? "selected" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="theme"
+                  value={t}
+                  checked={theme === t}
+                  onChange={() => handleThemeChange(t)}
+                />
+                <div className={`theme-icon theme-icon-${t}`}></div>
+                <span className="theme-name">
                   {t.charAt(0).toUpperCase() + t.slice(1)}
-                </option>
-              ))}
-            </select>
+                </span>
+              </label>
+            ))}
           </div>
         </div>
-        <div className="fullscreen-container">
-          <button onClick={toggleFullscreen} className="fullscreen-button">
-            <FontAwesomeIcon icon={isFullscreen ? faCompress : faExpand} />
-            {/* {isFullscreen ? " Exit Fullscreen" : " Fullscreen"} */}
-          </button>
+
+        <div className="sidebar-item" onClick={toggleFullscreen}>
+          <FontAwesomeIcon icon={isFullscreen ? faCompress : faExpand} />
+          <div className="sidebar-item-title">
+            {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+          </div>
         </div>
-        <button onClick={printNotes} className="print-button">
-          Print
-        </button>
-        <div className="footer-credits">Made with ♥ by Raj Kumar Dubey</div>
-      </footer>
+
+        <div className="sidebar-item" onClick={() => window.print()}>
+          <FontAwesomeIcon icon={faPrint} />
+          <div className="sidebar-item-title">Print Notes</div>
+        </div>
+
+        <div className="footer-credits">Made with ❤️ by Raj Kumar Dubey</div>
+      </div>
     </div>
   );
 };
