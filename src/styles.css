@@ -1,94 +1,106 @@
-/* NoteEditor.css */
+:root {
+  --font-family: "Helvetica Neue", Arial, sans-serif;
+  --transition-speed: 0.3s;
+
+  /* Light Theme Colors */
+  --light-bg: #f5f5f5;
+  --light-text: #2a2a3a;
+  --light-toolbar-bg: #eaeaea;
+  --light-border: #dcdcdc;
+  --light-accent: #007BFF;
+
+  /* Dark Theme Colors */
+  --dark-bg: #1e1e2f;
+  --dark-text: #edf2f4;
+  --dark-toolbar-bg: #2b2d42;
+  --dark-border: #404552;
+  --dark-accent: #ef233c;
+
+  /* Common Colors */
+  --button-color: #fff;
+  --print-button-bg: #ef233c;
+  --print-button-bg-hover: #d42c31;
+  --select-bg: #333;
+  --select-text: #fff;
+}
 
 body {
   margin: 0;
   padding: 0;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family);
+  transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
-/* Dark Theme */
-.note-editor-container.dark {
-  background-color: #1e1e2f;
-  color: #f0f0f0;
-}
-
-.note-editor-container.dark .ql-container {
-  background-color: #2a2a3a;
-}
-
-.note-editor-container.dark .ql-toolbar {
-  background-color: #2b2d42;
-}
-
-.note-editor-container.dark footer {
-  background-color: #2b2d42;
-  color: #edf2f4;
-}
-
-/* Light Theme */
+/* Dynamic Light Theme */
 .note-editor-container.light {
-  background-color: #f0f0f0;
-  color: #2a2a3a;
+  background-color: var(--light-bg);
+  color: var(--light-text);
 }
 
 .note-editor-container.light .ql-container {
-  background-color: #ffffff;
+  background-color: var(--light-bg);
+  color: var(--light-text);
 }
 
 .note-editor-container.light .ql-toolbar {
-  background-color: #e0e0e0;
+  background-color: var(--light-toolbar-bg);
+  border-bottom: 1px solid var(--light-border);
 }
 
 .note-editor-container.light footer {
-  background-color: #e0e0e0;
-  color: #2a2a3a;
+  background-color: var(--light-toolbar-bg);
+  color: var(--light-text);
+  border-top: 1px solid var(--light-border);
 }
 
-/* Common Styles */
-.note-editor-container {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-sizing: border-box;
+/* Dynamic Dark Theme */
+.note-editor-container.dark {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
 }
 
-.ql-container {
-  height: 100%;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+.note-editor-container.dark .ql-container {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
 }
 
+.note-editor-container.dark .ql-toolbar {
+  background-color: var(--dark-toolbar-bg);
+  border-bottom: 1px solid var(--dark-border);
+}
+
+.note-editor-container.dark footer {
+  background-color: var(--dark-toolbar-bg);
+  color: var(--dark-text);
+  border-top: 1px solid var(--dark-border);
+}
+
+/* Shared Styles */
 footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0px 20px;
   border-radius: 8px;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-  position: sticky;
-  bottom: 0;
-  z-index: 1;
-  display: flex;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   height: 70px;
 }
 
 .print-button {
-  background-color: #ef233c;
-  color: #fff;
+  background-color: var(--print-button-bg);
+  color: var(--button-color);
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color var(--transition-speed);
 }
 
 .print-button:hover {
-  background-color: #d42c31;
+  background-color: var(--print-button-bg-hover);
 }
 
-/* Theme Selector Styles */
+/* Theme Selector */
 .theme-selector {
   display: flex;
   align-items: center;
@@ -98,10 +110,8 @@ footer {
 .theme-label {
   font-size: 16px;
   font-weight: 500;
-  color: #fff; /* or #333 for light theme */
 }
 
-/* Custom Select Wrapper */
 .custom-select {
   position: relative;
   display: inline-block;
@@ -111,29 +121,27 @@ footer {
   width: 100px;
   appearance: none;
   outline: none;
-  background-color: #2a2a3a; /* For dark theme */
-  color: #fff;
+  background-color: var(--select-bg);
+  color: var(--select-text);
   padding: 8px 12px;
   border-radius: 8px;
   font-size: 14px;
-  font-family: "Helvetica Neue", Arial, sans-serif;
   cursor: pointer;
-  transition: background-color 0.3s, border-color 0.3s;
+  transition: background-color var(--transition-speed), border-color var(--transition-speed);
 }
 
 .custom-select select:hover,
 .custom-select select:focus {
-  background-color: #333;
+  background-color: var(--dark-accent);
 }
 
-/* Downward Arrow (optional, just for aesthetics) */
 .custom-select::after {
   content: "▼";
   position: absolute;
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  color: #fff;
+  color: var(--button-color);
   pointer-events: none;
 }
 
@@ -146,31 +154,24 @@ footer {
   display: flex;
   justify-content: left;
   align-items: center;
+  background-color: inherit;
 }
-
-.quill {
-  width: 100%;
-  position: relative;
-}
-
-
 
 .ql-container {
-  overflow-y: auto; /* Ensures scrolling is possible but scrollbar is hidden initially */
-  scrollbar-width: thin; /* For Firefox */
-  -ms-overflow-style: none; /* For Internet Explorer and Edge */
-  height: calc(100vh - 110px); /* Adjust this height to fit the space between the header and footer */
-  margin-bottom: 0; /* Remove any margin between editor and footer */
+  overflow-y: auto;
+  scrollbar-width: thin; 
+  height: calc(100vh - 110px);
+  margin-bottom: 0;
 }
 
 .ql-container::-webkit-scrollbar {
-  width: 0; /* Hides the scrollbar in Chrome, Safari, and other Webkit-based browsers */
+  width: 0;
 }
 
 .ql-container::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.5); /* Optional: If you want a subtle thumb when scrolling */
+  background: rgba(0, 0, 0, 0.5);
 }
 
 body {
-  overflow: hidden; /* Prevents scrollbar on the whole body */
+  overflow: hidden;
 }
