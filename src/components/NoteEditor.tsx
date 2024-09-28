@@ -3,6 +3,8 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import snow theme styles
 import { getStoredNotes, saveNotes } from "../utils/storage";
 import { getStoredTheme, saveTheme } from "../utils/theme"; // New theme storage utils
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExpand, faCompress } from "@fortawesome/free-solid-svg-icons";
 
 const themes = ["dark", "light", "solarized", "high-contrast", "pastel"]; // Available themes
 
@@ -129,9 +131,10 @@ const NoteEditor: React.FC = () => {
             </select>
           </div>
         </div>
-        <div>
+        <div className="fullscreen-container">
           <button onClick={toggleFullscreen} className="fullscreen-button">
-            {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+            <FontAwesomeIcon icon={isFullscreen ? faCompress : faExpand} />
+            {/* {isFullscreen ? " Exit Fullscreen" : " Fullscreen"} */}
           </button>
         </div>
         <button onClick={printNotes} className="print-button">

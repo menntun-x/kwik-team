@@ -6,6 +6,8 @@
     "build": "webpack --config webpack.config.js"
   },
   "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "quill": "^2.0.2",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
