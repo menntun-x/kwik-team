@@ -4,6 +4,8 @@ import "react-quill/dist/quill.snow.css"; // Import snow theme styles
 import { getStoredNotes, saveNotes } from "../utils/storage";
 import { getStoredTheme, saveTheme } from "../utils/theme"; // New theme storage utils
 
+const themes = ["dark", "light", "solarized", "high-contrast", "pastel"]; // Available themes
+
 const NoteEditor: React.FC = () => {
   const [notes, setNotes] = useState<string>("");
   const [theme, setTheme] = useState<string>("dark"); // Default theme
@@ -82,8 +84,9 @@ const NoteEditor: React.FC = () => {
               value={theme}
               onChange={(e) => handleThemeChange(e.target.value)}
             >
-              <option value="dark">Dark</option>
-              <option value="light">Light</option>
+              {themes.map((t) => (
+                <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+              ))}
             </select>
           </div>
         </div>
