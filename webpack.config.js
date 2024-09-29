@@ -19,7 +19,11 @@ module.exports = {
       cacheGroups: {
         defaultVendors: {
           test: /[\\/]node_modules[\\/]/, // Split node_modules packages
-          name: "vendors",
+          name(module) {
+            // Create separate chunk names based on package names
+            const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+            return `vendor.${packageName.replace('@', '')}`;
+          },
           chunks: "all",
           priority: -10,
         },
