@@ -341,26 +341,71 @@ body {
   &.light {
     background-color: var(--light-bg);
     color: var(--light-text);
+    .ql-picker-label {
+      &.ql-active {
+        color: var(--light-accent);
+        background-color: var(--light-toolbar-bg);
+        .ql-stroke {
+          stroke: var(--light-accent);
+        }
+      }
+    }
   }
 
   &.dark {
     background-color: var(--dark-bg);
     color: var(--dark-text);
+    .ql-picker-label {
+      &.ql-active {
+        color: var(--dark-accent);
+        background-color: var(--dark-toolbar-bg);
+        .ql-stroke {
+          stroke: var(--dark-accent);
+        }
+      }
+    }
   }
 
   &.solarized {
     background-color: var(--solarized-bg);
     color: var(--solarized-text);
+    .ql-picker-label {
+      &.ql-active {
+        color: var(--solarized-accent);
+        background-color: var(--solarized-toolbar-bg);
+        .ql-stroke {
+          stroke: var(--solarized-accent);
+        }
+      }
+    }
   }
 
   &.high-contrast {
     background-color: var(--high-contrast-bg);
     color: var(--high-contrast-text);
+    .ql-picker-label {
+      &.ql-active {
+        color: var(--high-contrast-accent);
+        background-color: var(--high-contrast-toolbar-bg);
+        .ql-stroke {
+          stroke: var(--high-contrast-accent);
+        }
+      }
+    }
   }
 
   &.pastel {
     background-color: var(--pastel-bg);
     color: var(--pastel-text);
+    .ql-picker-label {
+      &.ql-active {
+        color: var(--pastel-accent);
+        background-color: var(--pastel-toolbar-bg);
+        .ql-stroke {
+          stroke: var(--pastel-accent);
+        }
+      }
+    }
   }
 
   .ql-snow {
