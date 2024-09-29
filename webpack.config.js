@@ -21,14 +21,17 @@ module.exports = {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
       },
+      {
+        test: /\.scss$/, // Add this rule for SCSS files
+        use: ['style-loader', 'css-loader', 'sass-loader'], // Process SCSS files with these loaders
+      },
     ],
   },
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
-        { from: 'public/manifest.json', to: '.' }, // Copies manifest.json to dist/
-        { from: 'public/index.html', to: '.' }, // Copies index.html to dist/
-        // { from: 'public/icons', to: 'icons' } // Copies icons folder to dist/icons/
+        { from: 'public/manifest.json', to: '.' },
+        { from: 'public/index.html', to: '.' },
       ],
     }),
   ],
