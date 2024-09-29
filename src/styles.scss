@@ -454,7 +454,7 @@ body {
 .ql-container {
   overflow-y: auto;
   scrollbar-width: thin;
-  height: calc(100vh - 40px);
+  height: calc(100vh - 40px) !important;
   margin-bottom: 0;
 
   &::-webkit-scrollbar {

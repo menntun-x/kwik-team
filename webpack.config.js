@@ -4,14 +4,28 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const BundleAnalyzerPlugin =
   require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+
 
 module.exports = {
   optimization: {
     minimize: true,
+    minimizer: [
+      `...`, // Keep the existing minimizer (e.g., Terser for JS)
+      new CssMinimizerPlugin(),
+    ],
     splitChunks: {
-      chunks: "all",
+      chunks: "all", // Splits vendor libraries and shared chunks
+      cacheGroups: {
+        defaultVendors: {
+          test: /[\\/]node_modules[\\/]/, // Split node_modules packages
+          name: "vendors",
+          chunks: "all",
+          priority: -10,
+        },
+      },
     },
-    usedExports: true, // Enables tree-shaking
+    usedExports: true, // Tree-shaking to remove unused code
   },
   entry: {
     app: "./src/index.tsx", // Your main entry point

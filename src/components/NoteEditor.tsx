@@ -4,14 +4,11 @@ import "react-quill/dist/quill.snow.css";
 import { getStoredNotes, saveNotes } from "../utils/storage";
 import { getStoredTheme, saveTheme } from "../utils/theme";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faExpand,
-  faCompress,
-  faBars,
-  faTimes,
-  faPalette,
-  faPrint,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExpand } from "@fortawesome/free-solid-svg-icons/faExpand";
+import { faCompress } from "@fortawesome/free-solid-svg-icons/faCompress";
+import { faBars } from "@fortawesome/free-solid-svg-icons/faBars";
+import { faPrint } from "@fortawesome/free-solid-svg-icons/faPrint";
+
 
 const themes = ["dark", "light", "solarized", "high-contrast", "pastel"];
 

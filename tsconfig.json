@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["dom", "es2015"],
-    "module": "es6",
+    "module": "esnext", // Or use 'es2020', 'es2022', etc., based on your needs
+    "target": "es5", // Or 'es6', or another target depending on your requirement
     "jsx": "react",
     "moduleResolution": "node",
+    "strict": true,
     "esModuleInterop": true,
-    "types": ["chrome"]
-  }
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"]
 }
