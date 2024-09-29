@@ -5,14 +5,22 @@ const BundleAnalyzerPlugin =
   require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const TerserPlugin = require('terser-webpack-plugin');
 
 
 module.exports = {
   optimization: {
     minimize: true,
     minimizer: [
-      `...`, // Keep the existing minimizer (e.g., Terser for JS)
       new CssMinimizerPlugin(),
+      new TerserPlugin({
+        terserOptions: {
+          compress: {
+            drop_console: true, // Removes console logs
+            drop_debugger: true, // Removes debugger statements
+          },
+        },
+      }),
     ],
     splitChunks: {
       chunks: "all", // Splits vendor libraries and shared chunks
@@ -21,8 +29,10 @@ module.exports = {
           test: /[\\/]node_modules[\\/]/, // Split node_modules packages
           name(module) {
             // Create separate chunk names based on package names
-            const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-            return `vendor.${packageName.replace('@', '')}`;
+            const packageName = module.context.match(
+              /[\\/]node_modules[\\/](.*?)([\\/]|$)/
+            )[1];
+            return `vendor.${packageName.replace("@", "")}`;
           },
           chunks: "all",
           priority: -10,
