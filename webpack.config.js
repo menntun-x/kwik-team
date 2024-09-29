@@ -7,6 +7,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   optimization: {
+    minimize: true,
     splitChunks: {
       chunks: "all",
     },
