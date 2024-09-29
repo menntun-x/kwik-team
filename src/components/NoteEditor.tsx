@@ -9,7 +9,6 @@ import { faCompress } from "@fortawesome/free-solid-svg-icons/faCompress";
 import { faBars } from "@fortawesome/free-solid-svg-icons/faBars";
 import { faPrint } from "@fortawesome/free-solid-svg-icons/faPrint";
 
-
 const themes = ["dark", "light", "solarized", "high-contrast", "pastel"];
 
 const NoteEditor: React.FC = () => {
@@ -18,6 +17,7 @@ const NoteEditor: React.FC = () => {
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<ReactQuill>(null); // Ref for editor
 
   useEffect(() => {
     getStoredNotes().then((storedNotes) => {
@@ -59,6 +59,8 @@ const NoteEditor: React.FC = () => {
   };
 
   const printNotes = () => {
+    const editorContent = editorRef.current?.getEditor().root.innerHTML; // Get raw HTML from the Quill editor
+
     const printWindow = window.open("", "_blank");
     if (printWindow) {
       printWindow.document.write(`
@@ -66,19 +68,60 @@ const NoteEditor: React.FC = () => {
           <head>
             <title>Print Notes</title>
             <style>
-              body { font-family: "Helvetica Neue", Arial, sans-serif; background-color: #2b2d42; color: #edf2f4; }
-              .print-content { padding: 20px; }
-              h1, h2, p { margin-bottom: 12px; }
-              a { color: #ef233c; text-decoration: underline; }
+              body {
+                font-family: "Helvetica Neue", Arial, sans-serif;
+                padding: 20px;
+              }
+              h1, h2, p {
+                margin-bottom: 12px;
+              }
+              a {
+                color: #000;
+                text-decoration: underline;
+              }
+              img {
+                max-width: 100%;
+                height: auto;
+              }
             </style>
           </head>
           <body>
-            <div class="print-content">${notes}</div>
+            <div class="print-content">
+              ${editorContent}
+            </div>
           </body>
         </html>
       `);
-      printWindow.document.close();
-      printWindow.print();
+
+      // Wait for all images to load before printing
+      const images = printWindow.document.images;
+      const totalImages = images.length;
+      let loadedImages = 0;
+
+      // Function to check if all images have loaded
+      const checkAllImagesLoaded = () => {
+        loadedImages++;
+        if (loadedImages === totalImages) {
+          printWindow.document.close(); // Ensure the document is fully loaded
+          printWindow.focus(); // Bring the print window to the front
+          printWindow.print(); // Trigger the print
+          printWindow.close(); // Close the print window after printing
+        }
+      };
+
+      // If there are images, add load event listeners
+      if (totalImages > 0) {
+        for (let i = 0; i < totalImages; i++) {
+          images[i].onload = checkAllImagesLoaded;
+          images[i].onerror = checkAllImagesLoaded; // In case an image fails to load
+        }
+      } else {
+        // No images, print immediately
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+      }
     }
   };
 
@@ -117,6 +160,7 @@ const NoteEditor: React.FC = () => {
   return (
     <div className={`note-editor-container ${theme}`}>
       <ReactQuill
+        ref={editorRef} // Assign ref to editor
         theme="snow"
         value={notes}
         onChange={handleNoteChange}
@@ -177,7 +221,7 @@ const NoteEditor: React.FC = () => {
           </div>
         </div>
 
-        <div className={`sidebar-item ${theme}`} onClick={() => window.print()}>
+        <div className={`sidebar-item ${theme}`} onClick={printNotes}>
           <FontAwesomeIcon
             icon={faPrint}
             className={`sidebar-item-icon ${theme}`}
