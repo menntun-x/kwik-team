@@ -137,7 +137,7 @@ const NoteEditor: React.FC = () => {
       />
 
       {!isSidebarOpen && (
-        <button className="hamburger-icon" onClick={toggleSidebar}>
+        <button className={`hamburger-icon ${theme}`} onClick={toggleSidebar}>
           <FontAwesomeIcon icon={faBars} />
         </button>
       )}
@@ -170,15 +170,21 @@ const NoteEditor: React.FC = () => {
           </div>
         </div>
 
-        <div className="sidebar-item" onClick={toggleFullscreen}>
-          <FontAwesomeIcon icon={isFullscreen ? faCompress : faExpand} />
+        <div className={`sidebar-item ${theme}`} onClick={toggleFullscreen}>
+          <FontAwesomeIcon
+            icon={isFullscreen ? faCompress : faExpand}
+            className={`sidebar-item-icon ${theme}`}
+          />
           <div className="sidebar-item-title">
             {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
           </div>
         </div>
 
-        <div className="sidebar-item" onClick={() => window.print()}>
-          <FontAwesomeIcon icon={faPrint} />
+        <div className={`sidebar-item ${theme}`} onClick={() => window.print()}>
+          <FontAwesomeIcon
+            icon={faPrint}
+            className={`sidebar-item-icon ${theme}`}
+          />
           <div className="sidebar-item-title">Print Notes</div>
         </div>
 
