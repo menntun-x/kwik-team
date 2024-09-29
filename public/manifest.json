@@ -7,10 +7,18 @@
     "newtab": "index.html"
   },
   "permissions": ["storage"],
-  "icons": {
-
+  "icons": {},
+  "background": {
+    "service_worker": "background.js"
   },
   "action": {
     "default_popup": "index.html"
-  }
+   
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
 }

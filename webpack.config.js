@@ -1,11 +1,32 @@
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const CompressionPlugin = require("compression-webpack-plugin");
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
-  entry: "./src/index.tsx",
+  optimization: {
+    splitChunks: {
+      chunks: "all",
+    },
+    usedExports: true, // Enables tree-shaking
+  },
+  entry: {
+    app: "./src/index.tsx", // Your main entry point
+    background: "./public/background.js", // Background script
+    content: "./public/content.js", // Content script
+  },
   output: {
+    filename: (pathData) => {
+      return pathData.chunk.name === "background" ||
+        pathData.chunk.name === "content"
+        ? "[name].js" // Disable hash for background.js and content.js
+        : "[name].[contenthash].js"; // Enable hash for other files
+    },
     path: path.resolve(__dirname, "dist"),
-    filename: "bundle.js",
+    clean: true,
+    chunkFilename: "[name].[contenthash].js",
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
@@ -31,9 +52,20 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         { from: "public/manifest.json", to: "." },
-        { from: "public/index.html", to: "." },
+        // { from: "public/index.html", to: "." },
       ],
     }),
+    new CompressionPlugin({
+      algorithm: "gzip",
+      test: /\.js(\?.*)?$/i,
+      threshold: 10240, // Only compress files over 10KB
+      minRatio: 0.8,
+    }),
+    new HtmlWebpackPlugin({
+      template: "public/index.html", // Template file to generate HTML from
+      filename: "index.html", // Output filename
+    }),
+    // new BundleAnalyzerPlugin(),
   ],
   mode: "production",
 };
