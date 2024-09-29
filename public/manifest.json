@@ -1,16 +1,24 @@
 {
   "manifest_version": 3,
-  "name": "Menntun-X",
+  "name": "Menntun-X-Kwik-Teams",
   "version": "1.0",
   "description": "A new tab note-taking interface with full formatting capabilities.",
   "chrome_url_overrides": {
     "newtab": "index.html"
   },
   "permissions": ["storage"],
-  "icons": {
-
+  "icons": {},
+  "background": {
+    "service_worker": "background.js"
   },
   "action": {
     "default_popup": "index.html"
-  }
+   
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
 }
