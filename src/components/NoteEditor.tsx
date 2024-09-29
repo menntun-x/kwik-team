@@ -229,7 +229,9 @@ const NoteEditor: React.FC = () => {
           <div className="sidebar-item-title">Print Notes</div>
         </div>
 
-        <div className="footer-credits">Made with ❤️ by Raj Kumar Dubey</div>
+        <div className={`footer-credits ${theme}`}>
+          Made with <span className="beating-heart">❤️</span> by Raj Kumar Dubey
+        </div>
       </div>
     </div>
   );
