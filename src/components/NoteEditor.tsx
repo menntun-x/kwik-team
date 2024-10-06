@@ -1,16 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { v4 as uuidv4 } from "uuid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faExpand,
-  faCompress,
-  faBars,
-  faPrint,
-  faPlus,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExpand } from "@fortawesome/free-solid-svg-icons/faExpand";
+import { faCompress } from "@fortawesome/free-solid-svg-icons/faCompress";
+import { faBars } from "@fortawesome/free-solid-svg-icons/faBars";
+import { faPrint } from "@fortawesome/free-solid-svg-icons/faPrint";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import {
   getStoredNotesList,
   saveNotesList,
@@ -18,6 +15,7 @@ import {
   saveNoteContent,
 } from "../utils/storage";
 import { getStoredTheme, saveTheme } from "../utils/theme";
+import { v4 as uuidv4 } from "uuid";
 
 const themes = ["dark", "light", "solarized", "high-contrast", "pastel"];
 
@@ -148,20 +146,63 @@ const NoteEditor: React.FC = () => {
           </body>
         </html>
       `);
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-      printWindow.close();
+      // Wait for all images to load before printing
+      const images = printWindow.document.images;
+      const totalImages = images.length;
+      let loadedImages = 0;
+
+      // Function to check if all images have loaded
+      const checkAllImagesLoaded = () => {
+        loadedImages++;
+        if (loadedImages === totalImages) {
+          printWindow.document.close(); // Ensure the document is fully loaded
+          printWindow.focus(); // Bring the print window to the front
+          printWindow.print(); // Trigger the print
+          printWindow.close(); // Close the print window after printing
+        }
+      };
+
+      // If there are images, add load event listeners
+      if (totalImages > 0) {
+        for (let i = 0; i < totalImages; i++) {
+          images[i].onload = checkAllImagesLoaded;
+          images[i].onerror = checkAllImagesLoaded; // In case an image fails to load
+        }
+      } else {
+        // No images, print immediately
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+      }
     }
   };
 
   const toggleFullscreen = () => {
     const elem = document.documentElement;
+
     if (!isFullscreen) {
-      elem.requestFullscreen?.();
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if ((elem as any).mozRequestFullScreen) {
+        (elem as any).mozRequestFullScreen();
+      } else if ((elem as any).webkitRequestFullscreen) {
+        (elem as any).webkitRequestFullscreen();
+      } else if ((elem as any).msRequestFullscreen) {
+        (elem as any).msRequestFullscreen();
+      }
     } else {
-      document.exitFullscreen?.();
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if ((document as any).mozCancelFullScreen) {
+        (document as any).mozCancelFullScreen();
+      } else if ((document as any).webkitExitFullscreen) {
+        (document as any).webkitExitFullscreen();
+      } else if ((document as any).msExitFullscreen) {
+        (document as any).msExitFullscreen();
+      }
     }
+
     setIsFullscreen(!isFullscreen);
   };
 
@@ -172,8 +213,8 @@ const NoteEditor: React.FC = () => {
   return (
     <div className={`note-editor-container ${theme}`}>
       {/* Display the title of the currently editing note */}
-      <div className="note-title-wrapper">
-        <h1 className="current-note-title">
+      <div className={`note-title-wrapper ${theme}`}>
+        <h1 className={`current-note-title ${theme}`}>
           {currentNoteId
             ? notesList.find((note) => note.id === currentNoteId)?.title
             : "No Note Selected"}
@@ -186,6 +227,16 @@ const NoteEditor: React.FC = () => {
         value={currentNoteContent}
         onChange={handleNoteChange}
         placeholder="Write your notes here..."
+        modules={{
+          toolbar: [
+            [{ header: [1, 2, false] }],
+            ["bold", "italic", "underline", "strike"],
+            [{ list: "ordered" }, { list: "bullet" }],
+            ["blockquote", "code-block"],
+            ["link", "image"],
+            ["clean"],
+          ],
+        }}
       />
 
       {!isSidebarOpen && (
@@ -221,27 +272,39 @@ const NoteEditor: React.FC = () => {
             ))}
           </div>
         </div>
+        <div className={`notes-list ${theme}`}>
+          <div className="notes-title-wrapper">
+            {" "}
+            <h3 className={`notes-title ${theme}`}>Notes</h3>
+            <button
+              className={`create-note-btn ${theme}`}
+              onClick={createNewNote}
+            >
+              <FontAwesomeIcon
+                icon={faPlus}
+                className={`sidebar-action-icon ${theme}`}
+              />
+            </button>
+          </div>
 
-        <div className="notes-list">
-          <h3>Notes</h3>
-          <button
-            className={`create-note-btn ${theme}`}
-            onClick={createNewNote}
-          >
-            <FontAwesomeIcon icon={faPlus} /> New Note
-          </button>
-          <ul>
+          <ul className={`notes-list-ul ${theme}`}>
             {notesList.map((note) => (
               <li
                 key={note.id}
                 className={`note-item ${
-                  note.id === currentNoteId ? "active" : ""
+                  note.id === currentNoteId ? `active ${theme}` : theme
                 }`}
               >
-                <span onClick={() => loadNote(note.id)}>{note.title}</span>
+                <span
+                  className={`note-title ${theme}`}
+                  onClick={() => loadNote(note.id)}
+                >
+                  {note.title}
+                </span>
+
                 <FontAwesomeIcon
                   icon={faTrash}
-                  className="delete-icon"
+                  className={`sidebar-action-icon ${theme}`}
                   onClick={() => deleteNote(note.id)}
                 />
               </li>
@@ -252,17 +315,17 @@ const NoteEditor: React.FC = () => {
         <div className={`sidebar-item ${theme}`} onClick={toggleFullscreen}>
           <FontAwesomeIcon
             icon={isFullscreen ? faCompress : faExpand}
-            className={`sidebar-item-icon ${theme}`}
+            className={`sidebar-action-icon ${theme}`}
           />
           <div className="sidebar-item-title">
             {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
           </div>
         </div>
 
-        <div className={`sidebar-item ${theme}`} onClick={printNotes}>
+        <div className={`sidebar-item ${theme} m-b-50`} onClick={printNotes}>
           <FontAwesomeIcon
             icon={faPrint}
-            className={`sidebar-item-icon ${theme}`}
+            className={`sidebar-action-icon ${theme}`}
           />
           <div className="sidebar-item-title">Print Notes</div>
         </div>
