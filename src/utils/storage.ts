@@ -1,4 +1,3 @@
-
 export interface Note {
   id: string;
   title: string;
@@ -21,7 +20,6 @@ export const saveNotesList = async (notesList: Note[]) => {
   });
 };
 
-
 export const getStoredNoteById = async (id: string): Promise<Note | null> => {
   return new Promise((resolve) => {
     chrome.storage.local.get(["notesList"], (result) => {
@@ -37,10 +35,15 @@ export const saveNoteContent = async (id: string, content: string) => {
     chrome.storage.local.get(["notesList"], (result) => {
       const notesList: Note[] = result.notesList || [];
       const noteIndex = notesList.findIndex((note) => note.id === id);
+
       if (noteIndex !== -1) {
-        notesList[noteIndex].content = content;
-        chrome.storage.local.set({ notesList }, () => resolve());
+        notesList[noteIndex].content = content; // Ensure the correct note gets updated
+        chrome.storage.local.set({ notesList }, () => {
+          console.log(`Content saved for note ${id}`);
+          resolve();
+        });
       }
     });
   });
 };
+
