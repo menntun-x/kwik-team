@@ -21,6 +21,7 @@ export const saveNotesList = async (notesList: Note[]) => {
   });
 };
 
+
 export const getStoredNoteById = async (id: string): Promise<Note | null> => {
   return new Promise((resolve) => {
     chrome.storage.local.get(["notesList"], (result) => {

@@ -29,6 +29,17 @@ const NoteEditor: React.FC = () => {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<ReactQuill>(null);
 
+  const debounce = <T extends (...args: any[]) => void>(
+    func: T,
+    delay: number
+  ) => {
+    let debounceTimer: ReturnType<typeof setTimeout>;
+    return (...args: Parameters<T>) => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => func(...args), delay);
+    };
+  };
+
   // Fetch notes and theme on load
   useEffect(() => {
     getStoredNotesList().then((storedNotesList) => {
@@ -65,61 +76,95 @@ const NoteEditor: React.FC = () => {
     };
   }, [isSidebarOpen]);
 
-  // Create a new blank note without clearing the current one
-  const createNewNote = () => {
+  const createNewNote = async () => {
+    const randomNoteId = uuidv4();
+    // Create a new note object with empty content
     const newNote = {
-      id: uuidv4(),
-      title: `New Note ${notesList.length + 1}`,
+      id: randomNoteId,
+      title: `New Note ${randomNoteId}`, // Unique title
       content: "",
     };
+
+    // Update the notes list with the new note
     const updatedNotesList = [...notesList, newNote];
-    setNotesList(updatedNotesList);
-    setCurrentNoteId(newNote.id);
+    setNotesList(updatedNotesList); // State update
     saveNotesList(updatedNotesList);
-    loadNote(newNote.id);
-    setIsSidebarOpen(false); // Close the sidebar
+    console.log("New note created:", newNote); // Debugging to ensure note creation works
+
+    // Wait for the note to load
+    setCurrentNoteId(newNote.id);
+    setCurrentNoteContent(newNote.content || ""); // Ensure safe loading
+    setIsSidebarOpen(false); // Close sidebar when loading a note
+    console.log("Note loaded with ID:", newNote.id); // Check if loadNote works
+    console.log(updatedNotesList, "updatedNotesList");
+    console.log(currentNoteId, "currentNoteId");
   };
 
-  // Load a note by its ID without clearing other notes
   const loadNote = async (noteId: string) => {
+    // Save current note content before switching
+    if (currentNoteId) {
+      await saveNoteContent(currentNoteId, currentNoteContent); // Ensure note is saved before switching
+      const updatedNotesList = notesList.map((note) =>
+        note.id === currentNoteId
+          ? { ...note, content: currentNoteContent }
+          : note
+      );
+      setNotesList(updatedNotesList);
+      saveNotesList(updatedNotesList); // Update the full notes list in storage
+    }
+
+    // Load the selected note's content
     const note = await getStoredNoteById(noteId);
     if (note) {
       setCurrentNoteId(note.id);
-      setCurrentNoteContent(note.content);
-      setIsSidebarOpen(false); // Close the sidebar when loading a note
+      setCurrentNoteContent(note.content || ""); // Ensure safe loading
+      setIsSidebarOpen(false); // Close sidebar when loading a note
     }
   };
 
-  // Save the content of the currently active note
   const handleNoteChange = (value: string) => {
     setCurrentNoteContent(value);
+
+    // Update the note's content only in the active note
     if (currentNoteId) {
-      saveNoteContent(currentNoteId, value);
       const updatedNotesList = notesList.map((note) =>
         note.id === currentNoteId ? { ...note, content: value } : note
       );
-      setNotesList(updatedNotesList);
+      setNotesList(updatedNotesList); // Update the note list state
+      saveNoteContent(currentNoteId, value); // Save content in storage
     }
   };
 
-  // Delete a note by its ID
   const deleteNote = (noteId: string) => {
-    const filteredNotes = notesList.filter((note) => note.id !== noteId);
-    setNotesList(filteredNotes);
+    // Find the index of the note to be deleted
+    const noteIndexToDelete = notesList.findIndex((note) => note.id === noteId);
 
-    // If the current note is deleted, switch to another note or show blank
+    // If the note is not found, return early
+    if (noteIndexToDelete === -1) return;
+
+    // Create a new array of notes excluding the deleted note
+    const filteredNotes = notesList.filter((note) => note.id !== noteId);
+
+    // Update the note list in the state and local storage
+    setNotesList(filteredNotes);
+    saveNotesList(filteredNotes);
+
+    // If the current note is deleted
     if (currentNoteId === noteId) {
       if (filteredNotes.length > 0) {
-        setCurrentNoteId(filteredNotes[0].id);
-        setCurrentNoteContent(filteredNotes[0].content);
+        // Set the next note in the list (if any) as the current note
+        const nextNoteIndex = Math.max(0, noteIndexToDelete - 1); // Load the previous note if possible
+        const nextNote = filteredNotes[nextNoteIndex];
+
+        setCurrentNoteId(nextNote.id);
+        setCurrentNoteContent(nextNote.content || "");
       } else {
+        // If no notes remain, clear the editor
         setCurrentNoteId(null);
         setCurrentNoteContent("");
       }
     }
-    saveNotesList(filteredNotes);
   };
-
   // Theme change
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
