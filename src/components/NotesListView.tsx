@@ -1,6 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
+import { faPlusCircle, faStickyNote } from "@fortawesome/free-solid-svg-icons";
 import "./NotesListView.scss";
 
 interface Note {
@@ -28,17 +29,30 @@ const NotesListView: React.FC<NotesListViewProps> = ({
     <div className="notes-list-view">
       {notes.length === 0 ? (
         <div className="no-notes">
-          <p>No notes available. Let’s start your first one!</p>
-          <button className="create-note-button" onClick={onCreateNewNote}>
-            <i className="icon-plus"></i> Create Your First Note
-          </button>
+          <div className="no-notes-content">
+            <FontAwesomeIcon icon={faStickyNote} className="no-notes-icon" />
+            <p className="no-notes-text">
+              No notes available. Let’s start your first one!
+            </p>
+            <button className="create-note-button" onClick={onCreateNewNote}>
+              <FontAwesomeIcon
+                icon={faPlusCircle}
+                className="sidebar-action-icon"
+              />{" "}
+              Create Your First Note
+            </button>
+          </div>
         </div>
       ) : (
         <>
           <div className="notes-header">
             <h2>All Notes</h2>
             <button className="create-note-button" onClick={onCreateNewNote}>
-              <i className="icon-plus"></i> New Note
+              <FontAwesomeIcon
+                icon={faPlusCircle}
+                className="sidebar-action-icon"
+              />{" "}
+              Create New Note
             </button>
           </div>
           <ul className="notes-list">
