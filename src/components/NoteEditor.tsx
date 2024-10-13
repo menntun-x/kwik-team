@@ -139,6 +139,22 @@ const NoteEditor: React.FC = () => {
     setCurrentNoteContent(content);
   };
 
+  // function to delete a note
+  const deleteNote = async (noteId: string) => {
+    // Filter out the note to be deleted
+    const updatedNotesList = notesList.filter((note) => note.id !== noteId);
+
+    // Update the notes list state and Chrome storage
+    setNotesList(updatedNotesList);
+    await saveNotesList(updatedNotesList);
+
+    // If the deleted note was the current note, clear the editor
+    if (currentNoteId === noteId) {
+      setCurrentNoteId(null);
+      setCurrentNoteContent("");
+    }
+  };
+
   // Theme change
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
@@ -236,6 +252,7 @@ const NoteEditor: React.FC = () => {
           notes={notesList}
           onNoteSelect={switchNote}
           onCreateNewNote={createNewNote}
+          onDeleteNote={deleteNote}
         />
       ) : (
         <>
@@ -326,19 +343,20 @@ const NoteEditor: React.FC = () => {
                       className={`note-item ${
                         note.id === currentNoteId ? `active ${theme}` : theme
                       }`}
+                      onClick={() => switchNote(note.id)}
                     >
-                      <span
-                        className={`note-title ${theme}`}
-                        onClick={() => switchNote(note.id)}
-                      >
+                      <span className={`note-title ${theme}`}>
                         {note.title}
                       </span>
 
-                      {/* <FontAwesomeIcon
-                  icon={faTrash}
-                  className={`sidebar-action-icon ${theme}`}
-                  onClick={() => deleteNote(note.id)}
-                /> */}
+                      <FontAwesomeIcon
+                        icon={faTrash}
+                        className={`sidebar-action-icon ${theme}`}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevents the event from bubbling up to the li
+                          deleteNote(note.id);
+                        }}
+                      />
                     </li>
                   ))}
                 </ul>
