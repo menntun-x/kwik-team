@@ -19,6 +19,12 @@ import { v4 as uuidv4 } from "uuid";
 
 const themes = ["dark", "light", "solarized", "high-contrast", "pastel"];
 
+interface Note {
+  id: string;
+  title: string;
+  content: string;
+}
+
 const NoteEditor: React.FC = () => {
   const [notesList, setNotesList] = useState<any[]>([]);
   const [currentNoteId, setCurrentNoteId] = useState<string | null>(null);
@@ -28,31 +34,6 @@ const NoteEditor: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<ReactQuill>(null);
-
-  const debounce = <T extends (...args: any[]) => void>(
-    func: T,
-    delay: number
-  ) => {
-    let debounceTimer: ReturnType<typeof setTimeout>;
-    return (...args: Parameters<T>) => {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => func(...args), delay);
-    };
-  };
-
-  // Fetch notes and theme on load
-  useEffect(() => {
-    getStoredNotesList().then((storedNotesList) => {
-      setNotesList(storedNotesList);
-      if (storedNotesList.length > 0) {
-        setCurrentNoteId(storedNotesList[0].id);
-        setCurrentNoteContent(storedNotesList[0].content);
-      }
-    });
-    getStoredTheme().then((storedTheme) => {
-      if (storedTheme) setTheme(storedTheme);
-    });
-  }, []);
 
   // Handle sidebar outside click
   useEffect(() => {
@@ -76,95 +57,87 @@ const NoteEditor: React.FC = () => {
     };
   }, [isSidebarOpen]);
 
+  // Load notes from Chrome storage when component mounts
+  useEffect(() => {
+    chrome.storage.local.get("notesList", (data) => {
+      if (data.notesList) {
+        setNotesList(data.notesList);
+      }
+    });
+  }, []);
+
+  // Save current note content every time it changes (optional)
+  useEffect(() => {
+    if (currentNoteId) {
+      const debounceSave = setTimeout(() => {
+        saveNoteContent(currentNoteId, currentNoteContent);
+      }, 1000); // Auto-save after 1 second of inactivity
+      return () => clearTimeout(debounceSave);
+    }
+  }, [currentNoteContent, currentNoteId]);
+
+  // Save the updated notes list to Chrome storage
+  const saveNotesList = async (updatedNotesList: Note[]) => {
+    chrome.storage.local.set({ notesList: updatedNotesList }, () => {
+      console.log("Notes saved successfully.");
+    });
+  };
+
+  // Save the current note's content before switching or creating a new one
+  const saveNoteContent = async (noteId: string, content: string) => {
+    const updatedNotesList = notesList.map((note) =>
+      note.id === noteId ? { ...note, content } : note
+    );
+    setNotesList(updatedNotesList);
+    await saveNotesList(updatedNotesList);
+  };
+
+  // Create a new note and set it as the current note
   const createNewNote = async () => {
-    const randomNoteId = uuidv4();
-    // Create a new note object with empty content
-    const newNote = {
-      id: randomNoteId,
-      title: `New Note ${randomNoteId}`, // Unique title
+    // Save current note before creating a new one
+    if (currentNoteId) {
+      await saveNoteContent(currentNoteId, currentNoteContent);
+    }
+
+    // Create a new note
+    const newNote: Note = {
+      id: uuidv4(),
+      title: `New Note ${Date.now()}`,
       content: "",
     };
 
-    // Update the notes list with the new note
+    // Update notes list and set new note as current
     const updatedNotesList = [...notesList, newNote];
-    setNotesList(updatedNotesList); // State update
-    saveNotesList(updatedNotesList);
-    console.log("New note created:", newNote); // Debugging to ensure note creation works
+    setNotesList(updatedNotesList);
+    await saveNotesList(updatedNotesList); // Save to Chrome storage
 
-    // Wait for the note to load
     setCurrentNoteId(newNote.id);
-    setCurrentNoteContent(newNote.content || ""); // Ensure safe loading
-    setIsSidebarOpen(false); // Close sidebar when loading a note
-    console.log("Note loaded with ID:", newNote.id); // Check if loadNote works
-    console.log(updatedNotesList, "updatedNotesList");
-    console.log(currentNoteId, "currentNoteId");
+    setCurrentNoteContent(newNote.content);
+    setIsSidebarOpen(false); // Close sidebar after creation (optional)
   };
 
-  const loadNote = async (noteId: string) => {
-    // Save current note content before switching
+  // Switch between notes, saving the current one before loading another
+  const switchNote = async (noteId: string) => {
+    // Save the current note's content before switching
     if (currentNoteId) {
-      await saveNoteContent(currentNoteId, currentNoteContent); // Ensure note is saved before switching
-      const updatedNotesList = notesList.map((note) =>
-        note.id === currentNoteId
-          ? { ...note, content: currentNoteContent }
-          : note
-      );
-      setNotesList(updatedNotesList);
-      saveNotesList(updatedNotesList); // Update the full notes list in storage
+      await saveNoteContent(currentNoteId, currentNoteContent);
     }
 
-    // Load the selected note's content
-    const note = await getStoredNoteById(noteId);
-    if (note) {
-      setCurrentNoteId(note.id);
-      setCurrentNoteContent(note.content || ""); // Ensure safe loading
-      setIsSidebarOpen(false); // Close sidebar when loading a note
+    // Load the new note
+    const selectedNote = notesList.find((note) => note.id === noteId);
+    if (selectedNote) {
+      setCurrentNoteId(selectedNote.id);
+      setCurrentNoteContent(selectedNote.content || "");
     }
+
+    setIsSidebarOpen(false); // Close the sidebar (optional)
   };
 
-  const handleNoteChange = (value: string) => {
-    setCurrentNoteContent(value);
-
-    // Update the note's content only in the active note
-    if (currentNoteId) {
-      const updatedNotesList = notesList.map((note) =>
-        note.id === currentNoteId ? { ...note, content: value } : note
-      );
-      setNotesList(updatedNotesList); // Update the note list state
-      saveNoteContent(currentNoteId, value); // Save content in storage
-    }
+  // Handle changes in the note content (editing)
+  const handleNoteContentChange = (content: string) => {
+    setCurrentNoteContent(content);
   };
 
-  const deleteNote = (noteId: string) => {
-    // Find the index of the note to be deleted
-    const noteIndexToDelete = notesList.findIndex((note) => note.id === noteId);
-
-    // If the note is not found, return early
-    if (noteIndexToDelete === -1) return;
-
-    // Create a new array of notes excluding the deleted note
-    const filteredNotes = notesList.filter((note) => note.id !== noteId);
-
-    // Update the note list in the state and local storage
-    setNotesList(filteredNotes);
-    saveNotesList(filteredNotes);
-
-    // If the current note is deleted
-    if (currentNoteId === noteId) {
-      if (filteredNotes.length > 0) {
-        // Set the next note in the list (if any) as the current note
-        const nextNoteIndex = Math.max(0, noteIndexToDelete - 1); // Load the previous note if possible
-        const nextNote = filteredNotes[nextNoteIndex];
-
-        setCurrentNoteId(nextNote.id);
-        setCurrentNoteContent(nextNote.content || "");
-      } else {
-        // If no notes remain, clear the editor
-        setCurrentNoteId(null);
-        setCurrentNoteContent("");
-      }
-    }
-  };
   // Theme change
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme);
@@ -270,7 +243,7 @@ const NoteEditor: React.FC = () => {
         ref={editorRef}
         theme="snow"
         value={currentNoteContent}
-        onChange={handleNoteChange}
+        onChange={handleNoteContentChange}
         placeholder="Write your notes here..."
         modules={{
           toolbar: [
@@ -342,16 +315,16 @@ const NoteEditor: React.FC = () => {
               >
                 <span
                   className={`note-title ${theme}`}
-                  onClick={() => loadNote(note.id)}
+                  onClick={() => switchNote(note.id)}
                 >
                   {note.title}
                 </span>
 
-                <FontAwesomeIcon
+                {/* <FontAwesomeIcon
                   icon={faTrash}
                   className={`sidebar-action-icon ${theme}`}
                   onClick={() => deleteNote(note.id)}
-                />
+                /> */}
               </li>
             ))}
           </ul>
