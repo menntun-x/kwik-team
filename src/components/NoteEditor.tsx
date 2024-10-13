@@ -16,6 +16,7 @@ import {
 } from "../utils/storage";
 import { getStoredTheme, saveTheme } from "../utils/theme";
 import { v4 as uuidv4 } from "uuid";
+import NotesListView from "./NotesListView";
 
 const themes = ["dark", "light", "solarized", "high-contrast", "pastel"];
 
@@ -229,129 +230,151 @@ const NoteEditor: React.FC = () => {
   };
 
   return (
-    <div className={`note-editor-container ${theme}`}>
-      {/* Display the title of the currently editing note */}
-      <div className={`note-title-wrapper ${theme}`}>
-        <h1 className={`current-note-title ${theme}`}>
-          {currentNoteId
-            ? notesList.find((note) => note.id === currentNoteId)?.title
-            : "No Note Selected"}
-        </h1>
-      </div>
+    <div>
+      {!currentNoteId ? (
+        <NotesListView
+          notes={notesList}
+          onNoteSelect={switchNote}
+          onCreateNewNote={createNewNote}
+        />
+      ) : (
+        <>
+          <div className={`note-editor-container ${theme}`}>
+            <div className={`note-title-wrapper ${theme}`}>
+              <h1 className={`current-note-title ${theme}`}>
+                {currentNoteId
+                  ? notesList.find((note) => note.id === currentNoteId)?.title
+                  : "No Note Selected"}
+              </h1>
+            </div>
 
-      <ReactQuill
-        ref={editorRef}
-        theme="snow"
-        value={currentNoteContent}
-        onChange={handleNoteContentChange}
-        placeholder="Write your notes here..."
-        modules={{
-          toolbar: [
-            [{ header: [1, 2, false] }],
-            ["bold", "italic", "underline", "strike"],
-            [{ list: "ordered" }, { list: "bullet" }],
-            ["blockquote", "code-block"],
-            ["link", "image"],
-            ["clean"],
-          ],
-        }}
-      />
+            <ReactQuill
+              ref={editorRef}
+              theme="snow"
+              value={currentNoteContent}
+              onChange={handleNoteContentChange}
+              placeholder="Write your notes here..."
+              modules={{
+                toolbar: [
+                  [{ header: [1, 2, false] }],
+                  ["bold", "italic", "underline", "strike"],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["blockquote", "code-block"],
+                  ["link", "image"],
+                  ["clean"],
+                ],
+              }}
+            />
 
-      {!isSidebarOpen && (
-        <button className={`hamburger-icon ${theme}`} onClick={toggleSidebar}>
-          <FontAwesomeIcon icon={faBars} />
-        </button>
-      )}
-
-      <div
-        className={`sidebar ${isSidebarOpen ? "open" : ""} ${theme}`}
-        ref={sidebarRef}
-      >
-        <div className="theme-selector">
-          <h3>Select Theme</h3>
-          <div className="theme-options">
-            {themes.map((t) => (
-              <label
-                key={t}
-                className={`theme-option ${t === theme ? "selected" : ""}`}
+            {!isSidebarOpen && (
+              <button
+                className={`hamburger-icon ${theme}`}
+                onClick={toggleSidebar}
               >
-                <input
-                  type="radio"
-                  name="theme"
-                  value={t}
-                  checked={theme === t}
-                  onChange={() => handleThemeChange(t)}
-                />
-                <div className={`theme-icon theme-icon-${t}`}></div>
-                <span className="theme-name">
-                  {t.charAt(0).toUpperCase() + t.slice(1)}
-                </span>
-              </label>
-            ))}
-          </div>
-        </div>
-        <div className={`notes-list ${theme}`}>
-          <div className="notes-title-wrapper">
-            {" "}
-            <h3 className={`notes-title ${theme}`}>Notes</h3>
-            <button
-              className={`create-note-btn ${theme}`}
-              onClick={createNewNote}
+                <FontAwesomeIcon icon={faBars} />
+              </button>
+            )}
+
+            <div
+              className={`sidebar ${isSidebarOpen ? "open" : ""} ${theme}`}
+              ref={sidebarRef}
             >
-              <FontAwesomeIcon
-                icon={faPlus}
-                className={`sidebar-action-icon ${theme}`}
-              />
-            </button>
-          </div>
+              <div className="theme-selector">
+                <h3>Select Theme</h3>
+                <div className="theme-options">
+                  {themes.map((t) => (
+                    <label
+                      key={t}
+                      className={`theme-option ${
+                        t === theme ? "selected" : ""
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="theme"
+                        value={t}
+                        checked={theme === t}
+                        onChange={() => handleThemeChange(t)}
+                      />
+                      <div className={`theme-icon theme-icon-${t}`}></div>
+                      <span className="theme-name">
+                        {t.charAt(0).toUpperCase() + t.slice(1)}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div className={`notes-list ${theme}`}>
+                <div className="notes-title-wrapper">
+                  {" "}
+                  <h3 className={`notes-title ${theme}`}>Notes</h3>
+                  <button
+                    className={`create-note-btn ${theme}`}
+                    onClick={createNewNote}
+                  >
+                    <FontAwesomeIcon
+                      icon={faPlus}
+                      className={`sidebar-action-icon ${theme}`}
+                    />
+                  </button>
+                </div>
 
-          <ul className={`notes-list-ul ${theme}`}>
-            {notesList.map((note) => (
-              <li
-                key={note.id}
-                className={`note-item ${
-                  note.id === currentNoteId ? `active ${theme}` : theme
-                }`}
-              >
-                <span
-                  className={`note-title ${theme}`}
-                  onClick={() => switchNote(note.id)}
-                >
-                  {note.title}
-                </span>
+                <ul className={`notes-list-ul ${theme}`}>
+                  {notesList.map((note) => (
+                    <li
+                      key={note.id}
+                      className={`note-item ${
+                        note.id === currentNoteId ? `active ${theme}` : theme
+                      }`}
+                    >
+                      <span
+                        className={`note-title ${theme}`}
+                        onClick={() => switchNote(note.id)}
+                      >
+                        {note.title}
+                      </span>
 
-                {/* <FontAwesomeIcon
+                      {/* <FontAwesomeIcon
                   icon={faTrash}
                   className={`sidebar-action-icon ${theme}`}
                   onClick={() => deleteNote(note.id)}
                 /> */}
-              </li>
-            ))}
-          </ul>
-        </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-        <div className={`sidebar-item ${theme}`} onClick={toggleFullscreen}>
-          <FontAwesomeIcon
-            icon={isFullscreen ? faCompress : faExpand}
-            className={`sidebar-action-icon ${theme}`}
-          />
-          <div className="sidebar-item-title">
-            {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+              <div
+                className={`sidebar-item ${theme}`}
+                onClick={toggleFullscreen}
+              >
+                <FontAwesomeIcon
+                  icon={isFullscreen ? faCompress : faExpand}
+                  className={`sidebar-action-icon ${theme}`}
+                />
+                <div className="sidebar-item-title">
+                  {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+                </div>
+              </div>
+
+              <div
+                className={`sidebar-item ${theme} m-b-50`}
+                onClick={printNotes}
+              >
+                <FontAwesomeIcon
+                  icon={faPrint}
+                  className={`sidebar-action-icon ${theme}`}
+                />
+                <div className="sidebar-item-title">Print Notes</div>
+              </div>
+
+              <div className={`footer-credits ${theme}`}>
+                <span>Made with ❤️ by Raj Kumar Dubey</span>
+              </div>
+            </div>
           </div>
-        </div>
-
-        <div className={`sidebar-item ${theme} m-b-50`} onClick={printNotes}>
-          <FontAwesomeIcon
-            icon={faPrint}
-            className={`sidebar-action-icon ${theme}`}
-          />
-          <div className="sidebar-item-title">Print Notes</div>
-        </div>
-
-        <div className={`footer-credits ${theme}`}>
-          <span>Made with ❤️ by Raj Kumar Dubey</span>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };
