@@ -37,6 +37,14 @@ const NoteEditor: React.FC = () => {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<ReactQuill>(null);
 
+  useEffect(() => {
+    getStoredTheme().then((storedTheme) => {
+      if (storedTheme) {
+        setTheme(storedTheme);
+      }
+    });
+  }, []);
+
   // Handle sidebar outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
