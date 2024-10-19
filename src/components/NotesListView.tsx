@@ -16,7 +16,8 @@ interface NotesListViewProps {
   onNoteSelect: (noteId: string) => void;
   onCreateNewNote: () => void;
   onDeleteNote: (noteId: string) => void;
-  onEditNoteTitle: (noteId: string, newTitle: string) => void; // New prop for title editing
+  onEditNoteTitle: (noteId: string, newTitle: string) => void;
+  theme: string;
   selectedNoteId?: string;
 }
 
@@ -26,6 +27,7 @@ const NotesListView: React.FC<NotesListViewProps> = ({
   onCreateNewNote,
   onDeleteNote,
   onEditNoteTitle,
+  theme,
   selectedNoteId,
 }) => {
   const [editableNoteId, setEditableNoteId] = useState<string | null>(null);
@@ -48,7 +50,7 @@ const NotesListView: React.FC<NotesListViewProps> = ({
     }
   };
   return (
-    <div className="notes-list-view">
+    <div className={`notes-list-view ${theme}`}>
       {notes.length === 0 ? (
         <div className="no-notes">
           <div className="no-notes-content">

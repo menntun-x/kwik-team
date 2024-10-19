@@ -272,7 +272,8 @@ const NoteEditor: React.FC = () => {
           onNoteSelect={switchNote}
           onCreateNewNote={createNewNote}
           onDeleteNote={deleteNote}
-          onEditNoteTitle={handleEditNoteTitle} // Pass the handler
+          onEditNoteTitle={handleEditNoteTitle}
+          theme={theme}
         />
       ) : (
         <>
