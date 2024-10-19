@@ -153,12 +153,10 @@ body {
 /* Hamburger icon */
 .hamburger-icon {
   position: fixed;
-  bottom: 20px;
+  top: 20px;
   left: 20px;
   border: none;
-  border-radius: 50%;
   cursor: pointer;
-  z-index: 1000;
   width: 40px;
   height: 40px;
 
@@ -325,7 +323,6 @@ body {
 
 .note-editor-container {
   position: relative;
-  padding-left: 40px;
 
   &.light {
     background-color: var(--light-bg);
@@ -455,7 +452,7 @@ body {
   scrollbar-width: thin;
   height: calc(100vh - 115px) !important;
   margin-bottom: 0;
-
+  padding-bottom: 20px;
   &::-webkit-scrollbar {
     width: 0;
   }
