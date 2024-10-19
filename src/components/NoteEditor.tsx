@@ -13,6 +13,7 @@ import {
   saveNotesList,
   getStoredNoteById,
   saveNoteContent,
+  saveNoteTitle,
 } from "../utils/storage";
 import { getStoredTheme, saveTheme } from "../utils/theme";
 import { v4 as uuidv4 } from "uuid";
@@ -161,6 +162,16 @@ const NoteEditor: React.FC = () => {
     saveTheme(newTheme);
   };
 
+  const handleEditNoteTitle = (noteId: string, newTitle: string) => {
+    saveNoteTitle(noteId, newTitle).then(() => {
+      setNotesList((prevNotes) =>
+        prevNotes.map((note) =>
+          note.id === noteId ? { ...note, title: newTitle } : note
+        )
+      );
+    });
+  };
+
   const printNotes = () => {
     const editorContent = editorRef.current?.getEditor().root.innerHTML;
     const printWindow = window.open("", "_blank");
@@ -253,6 +264,7 @@ const NoteEditor: React.FC = () => {
           onNoteSelect={switchNote}
           onCreateNewNote={createNewNote}
           onDeleteNote={deleteNote}
+          onEditNoteTitle={handleEditNoteTitle} // Pass the handler
         />
       ) : (
         <>

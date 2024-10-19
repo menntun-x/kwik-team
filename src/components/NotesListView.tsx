@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { faPlusCircle, faStickyNote } from "@fortawesome/free-solid-svg-icons";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import "./NotesListView.scss";
 
 interface Note {
@@ -15,6 +16,7 @@ interface NotesListViewProps {
   onNoteSelect: (noteId: string) => void;
   onCreateNewNote: () => void;
   onDeleteNote: (noteId: string) => void;
+  onEditNoteTitle: (noteId: string, newTitle: string) => void; // New prop for title editing
   selectedNoteId?: string;
 }
 
@@ -23,8 +25,28 @@ const NotesListView: React.FC<NotesListViewProps> = ({
   onNoteSelect,
   onCreateNewNote,
   onDeleteNote,
+  onEditNoteTitle,
   selectedNoteId,
 }) => {
+  const [editableNoteId, setEditableNoteId] = useState<string | null>(null);
+  const [titleInput, setTitleInput] = useState<string>("");
+  const [error, setError] = useState<string>("");
+
+  const handleTitleClick = (note: Note) => {
+    setEditableNoteId(note.id);
+    setTitleInput(note.title); // Initialize with the current note's title
+    setError("");
+  };
+
+  const handleTitleBlur = (noteId: string) => {
+    if (titleInput.trim()) {
+      onEditNoteTitle(noteId, titleInput.trim()); // Call prop to update title
+      setEditableNoteId(null); // Disable editing mode
+      setError("");
+    } else {
+      setError("Title cannot be empty");
+    }
+  };
   return (
     <div className="notes-list-view">
       {notes.length === 0 ? (
@@ -65,18 +87,45 @@ const NotesListView: React.FC<NotesListViewProps> = ({
                 onClick={() => onNoteSelect(note.id)}
               >
                 <div className="note-meta">
-                  <h3 className="note-title">{note.title}</h3>
+                  {editableNoteId === note.id ? (
+                    <>
+                      <input
+                        type="text"
+                        value={titleInput}
+                        className={`edit-title-input ${
+                          error ? "input-error" : ""
+                        }`}
+                        onChange={(e) => setTitleInput(e.target.value)}
+                        onBlur={() => handleTitleBlur(note.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        autoFocus
+                      />
+                      {error && <p className="error-message">{error}</p>}
+                    </>
+                  ) : (
+                    <div className="title-edit-wrapper">
+                      <h3 className="note-title">{note.title}</h3>
+                      <FontAwesomeIcon
+                        icon={faEdit}
+                        className="edit-title-icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleTitleClick(note);
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
                 <button
                   className="delete-note-button"
                   onClick={(e) => {
-                    e.stopPropagation(); // Prevents the event from bubbling up to the li
+                    e.stopPropagation();
                     onDeleteNote(note.id);
                   }}
                 >
                   <FontAwesomeIcon
                     icon={faTrash}
-                    className={`sidebar-action-icon`}
+                    className="sidebar-action-icon"
                   />
                 </button>
               </li>

@@ -47,3 +47,23 @@ export const saveNoteContent = async (id: string, content: string) => {
   });
 };
 
+// Update the note title by its ID
+export const saveNoteTitle = async (
+  id: string,
+  newTitle: string
+): Promise<void> => {
+  return new Promise<void>((resolve) => {
+    chrome.storage.local.get(["notesList"], (result) => {
+      const notesList: Note[] = result.notesList || [];
+      const noteIndex = notesList.findIndex((note) => note.id === id);
+
+      if (noteIndex !== -1) {
+        notesList[noteIndex].title = newTitle; // Update the title
+        chrome.storage.local.set({ notesList }, () => {
+          console.log(`Title updated for note ${id}`);
+          resolve();
+        });
+      }
+    });
+  });
+};

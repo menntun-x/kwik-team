@@ -23,11 +23,10 @@
     padding-bottom: 0.5rem;
     margin-bottom: 1.5rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Shadow effect for separation */
-
     display: flex;
     justify-content: space-between;
     align-items: center;
-
+    padding: 0 16px;
     h2 {
       font-size: 1.6rem;
       font-weight: 600;
@@ -73,6 +72,7 @@
       transition: transform 0.2s, box-shadow 0.2s;
       display: flex;
       align-items: center;
+      position: relative;
 
       &.selected {
         border-left: 4px solid #007bff;
@@ -89,6 +89,58 @@
         display: flex;
         align-items: center;
 
+        .edit-title-input {
+          width: 100%;
+          padding: 0.5rem;
+          font-size: 1.2rem;
+          border: none;
+          outline: none;
+          &:hover {
+            border: none;
+            outline: none;
+          }
+          *:focus {
+            outline: none;
+          }
+
+          &.input-error {
+            border-color: #ff4d4f;
+            background-color: #fff5f5;
+          }
+        }
+
+        .error-message {
+          color: #ff4d4f;
+          font-size: 11px;
+          margin-top: 0.25rem;
+          position: absolute;
+          left: 1rem;
+          bottom: -12px;
+        }
+
+        .title-edit-wrapper {
+          display: flex;
+          align-items: center;
+
+          .note-title {
+            font-size: 1.2rem;
+            color: #222;
+            margin: 0;
+            font-weight: 500;
+          }
+
+          .edit-title-icon {
+            margin-left: 0.5rem;
+            color: #007bff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: color 0.2s ease-in-out;
+
+            &:hover {
+              color: #0056b3;
+            }
+          }
+        }
         .note-title {
           font-size: 1.2rem;
           color: #222;
