@@ -1,0 +1,389 @@
+:root {
+  --font-family: "Helvetica Neue", Arial, sans-serif;
+  --transition-speed: 0.3s;
+
+  /* Light Theme */
+  --light-bg: #ffffff; /* Bright white for a clean look */
+  --light-text: #2c2c2c; /* Darker text for improved readability */
+  --light-toolbar-bg: #f7f7f7; /* Soft gray for subtle distinction */
+  --light-border: #d0d0d0; /* Light gray for a soft border effect */
+  --light-accent: #007bff; /* Bright blue accent for highlights */
+
+  /* Dark Theme */
+  --dark-bg: #1e1e2f; /* Dark gray for depth */
+  --dark-text: #f5f5f5; /* Lighter gray for readability */
+  --dark-toolbar-bg: #2b2d42; /* Slightly lighter for contrast */
+  --dark-border: #555555; /* Medium gray for subtle separation */
+  --dark-accent: #ff4c81; /* Vivid pink accent for improved visibility */
+
+  /* Solarized Theme */
+  --solarized-bg: #fdf6e3; /* Light cream for a warm feel */
+  --solarized-text: #657b83; /* Darker gray-green for text visibility */
+  --solarized-toolbar-bg: #eee8d5; /* Light background for the toolbar */
+  --solarized-border: #93a1a1; /* Soft gray-green for borders */
+  --solarized-accent: #268bd2; /* Strong blue accent for highlights */
+
+  /* High Contrast Theme */
+  --high-contrast-bg: #000000; /* True black for maximum depth */
+  --high-contrast-text: #ffffff; /* Bright white for stark contrast */
+  --high-contrast-toolbar-bg: #111111; /* Very dark gray for the toolbar */
+  --high-contrast-border: #ffcc00; /* Bright yellow for visibility */
+  --high-contrast-accent: #00ff00; /* Bright green for accents */
+
+  /* Soft Pastel Theme */
+  --pastel-bg: #faf3dd; /* Soft off-white for a gentle feel */
+  --pastel-text: #4a4a4a; /* Darker gray for better readability */
+  --pastel-toolbar-bg: #ffe8d6; /* Light peach for a soft touch */
+  --pastel-border: #f5b7a3; /* Soft coral for subtle borders */
+  --pastel-accent: #f08080; /* Light red for gentle accents */
+
+  /* Common */
+  --button-color: #ffffff; /* White text on buttons for visibility */
+  --print-button-bg: #ef233c; /* Bright red for print button */
+  --print-button-bg-hover: #d42c31; /* Darker red for hover effect */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  transition: background-color var(--transition-speed),
+    color var(--transition-speed);
+}
+
+.note-editor-container {
+  position: relative;
+  padding-left: 40px;
+}
+
+/* Dynamic Themes */
+.note-editor-container.light {
+  background-color: var(--light-bg);
+  color: var(--light-text);
+}
+
+.note-editor-container.dark {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+.note-editor-container.solarized {
+  background-color: var(--solarized-bg);
+  color: var(--solarized-text);
+}
+
+.note-editor-container.high-contrast {
+  background-color: var(--high-contrast-bg);
+  color: var(--high-contrast-text);
+}
+
+.note-editor-container.pastel {
+  background-color: var(--pastel-bg);
+  color: var(--pastel-text);
+}
+
+.ql-toolbar.ql-snow {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  background-color: inherit;
+}
+
+.ql-container {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  height: calc(100vh - 40px);
+  margin-bottom: 0;
+}
+
+.ql-container::-webkit-scrollbar {
+  width: 0;
+}
+
+.ql-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.ql-editor::-webkit-scrollbar {
+  width: 0px;
+}
+
+body {
+  overflow: hidden;
+}
+
+/* Sidebar styles */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 200px;
+  height: 100%;
+  background-color: var(--light-bg);
+  color: var(--light-text);
+  padding: 20px;
+  transition: all 0.3s ease-in-out;
+  z-index: 999;
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+/* Sidebar theme styles */
+.sidebar.dark {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+.sidebar.solarized {
+  background-color: var(--solarized-bg);
+  color: var(--solarized-text);
+}
+
+.sidebar.high-contrast {
+  background-color: var(--high-contrast-bg);
+  color: var(--high-contrast-text);
+}
+
+.sidebar.pastel {
+  background-color: var(--pastel-bg);
+  color: var(--pastel-text);
+}
+
+/* Sidebar items */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sidebar-item svg {
+  font-size: 20px;
+  color: var(--dark-accent);
+}
+
+.sidebar-item:hover {
+  background-color: var(--light-toolbar-bg);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Hamburger icon */
+.hamburger-icon {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background-color: var(--dark-accent);
+  color: var(--button-color);
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.hamburger-icon:hover {
+  background-color: var(--light-accent);
+}
+
+/* Theme Selector styles */
+.theme-selector {
+  margin-bottom: 20px;
+}
+
+.fullscreen-button,
+.print-button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.fullscreen-button {
+  background-color: var(--solarized-accent);
+  color: var(--button-color);
+}
+
+.print-button {
+  background-color: var(--print-button-bg);
+  color: var(--button-color);
+}
+
+.fullscreen-button:hover,
+.print-button:hover {
+  filter: brightness(1.1);
+}
+
+.footer-credits {
+  margin-top: auto;
+  text-align: center;
+  font-size: 14px;
+  color: var(--light-text);
+  opacity: 0.8;
+  position: fixed;
+  bottom: 10px;
+  width: 200px;
+}
+
+/* Improved spacing and alignment for items */
+.sidebar-item-title {
+  font-weight: 600;
+}
+
+.theme-selector h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.theme-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 themes in a row */
+  gap: 20px; /* Space between the theme options */
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Take full width of the grid item */
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+  text-align: center; /* Center align text */
+}
+
+.theme-option input {
+  display: none; /* Hide radio input */
+}
+
+.theme-icon {
+  width: 80px;
+  height: 40px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.theme-name {
+  font-size: 14px;
+}
+.theme-icon-dark {
+  background: var(--dark-bg); /* Dark background */
+  border: 2px solid var(--dark-border); /* Lighter border for contrast */
+  color: var(--dark-text); /* White text for readability */
+}
+
+.theme-icon-light {
+  background: var(--light-bg); /* Light background */
+  border: 2px solid var(--light-border); /* Slightly darker border */
+  color: var(--light-text); /* Dark text for contrast */
+}
+
+.theme-icon-solarized {
+  background: var(--solarized-bg); /* Solarized background */
+  border: 2px solid var(--solarized-border); /* Complementary border */
+  color: var(--solarized-text); /* Solarized text color */
+}
+
+.theme-icon-high-contrast {
+  background: var(--high-contrast-bg); /* Black background */
+  color: var(--high-contrast-text); /* White text for readability */
+  border: 2px solid var(--high-contrast-border); /* Green border for high contrast */
+}
+
+.theme-icon-pastel {
+  background: var(--pastel-bg); /* Pastel background */
+  border: 2px solid var(--pastel-border); /* Soft contrast border */
+  color: var(--pastel-text); /* Dark text for readability */
+}
+
+/* Adjusting for other themes */
+.note-editor-container.dark .theme-option.selected {
+  border-color: var(--dark-accent); /* Selection color for dark theme */
+}
+
+.note-editor-container.solarized .theme-option.selected {
+  border-color: var(
+    --solarized-accent
+  ); /* Selection color for solarized theme */
+}
+
+.note-editor-container.high-contrast .theme-option.selected {
+  border-color: var(
+    --high-contrast-accent
+  ); /* Selection color for high contrast theme */
+}
+
+.note-editor-container.pastel .theme-option.selected {
+  border-color: var(--pastel-accent); /* Selection color for pastel theme */
+}
+
+.note-editor-container.light .theme-option.selected {
+  border-color: var(--light-accent); /* Selection color for pastel theme */
+}
+
+.note-editor-container.dark .ql-snow.ql-toolbar button.ql-active .ql-stroke {
+  stroke: var(--dark-accent);
+}
+
+.note-editor-container.solarized
+  .ql-snow.ql-toolbar
+  button.ql-active
+  .ql-stroke {
+  stroke: var(--solarized-accent);
+}
+
+.note-editor-container.high-contrast
+  .ql-snow.ql-toolbar
+  button.ql-active
+  .ql-stroke {
+  stroke: var(--high-contrast-accent);
+}
+
+.note-editor-container.pastel .ql-snow.ql-toolbar button.ql-active .ql-stroke {
+  stroke: var(--pastel-accent);
+}
+
+.note-editor-container.light .ql-snow.ql-toolbar button.ql-active .ql-stroke {
+  stroke: var(--light-accent);
+}
+
+.note-editor-container.dark .ql-snow.ql-toolbar button.ql-active .ql-fill {
+  fill: var(--dark-accent);
+}
+
+.note-editor-container.solarized .ql-snow.ql-toolbar button.ql-active .ql-fill {
+  fill: var(--solarized-accent);
+}
+
+.note-editor-container.high-contrast
+  .ql-snow.ql-toolbar
+  button.ql-active
+  .ql-fill {
+  fill: var(--high-contrast-accent);
+}
+
+.note-editor-container.pastel .ql-snow.ql-toolbar button.ql-active .ql-fill {
+  fill: var(--pastel-accent);
+}
+
+.note-editor-container.light .ql-snow.ql-toolbar button.ql-active .ql-fill {
+  fill: var(--light-accent);
+}
