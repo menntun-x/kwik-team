@@ -52,16 +52,22 @@ const NotesListView: React.FC<NotesListViewProps> = ({
   return (
     <div className={`notes-list-view ${theme}`}>
       {notes.length === 0 ? (
-        <div className="no-notes">
-          <div className="no-notes-content">
-            <FontAwesomeIcon icon={faStickyNote} className="no-notes-icon" />
-            <p className="no-notes-text">
+        <div className={`no-notes ${theme}`}>
+          <div className={`no-notes-content ${theme}`}>
+            <FontAwesomeIcon
+              icon={faStickyNote}
+              className={`no-notes-icon ${theme}`}
+            />
+            <p className={`no-notes-text ${theme}`}>
               No notes available. Let’s start your first one!
             </p>
-            <button className="create-note-button" onClick={onCreateNewNote}>
+            <button
+              className={`create-note-button ${theme}`}
+              onClick={onCreateNewNote}
+            >
               <FontAwesomeIcon
                 icon={faPlusCircle}
-                className="sidebar-action-icon"
+                className={`note-action-icon ${theme}`}
               />{" "}
               Create Your First Note
             </button>
@@ -69,26 +75,29 @@ const NotesListView: React.FC<NotesListViewProps> = ({
         </div>
       ) : (
         <>
-          <div className="notes-header">
-            <h2>All Notes</h2>
-            <button className="create-note-button" onClick={onCreateNewNote}>
+          <div className={`notes-header ${theme}`}>
+            <h2 className={`${theme}`}>All Notes</h2>
+            <button
+              className={`create-note-button ${theme}`}
+              onClick={onCreateNewNote}
+            >
               <FontAwesomeIcon
                 icon={faPlusCircle}
-                className="sidebar-action-icon"
+                className={`note-action-icon ${theme}`}
               />{" "}
               Create New Note
             </button>
           </div>
-          <ul className="notes-list">
+          <ul className={`notes-list ${theme}`}>
             {notes.map((note) => (
               <li
                 key={note.id}
                 className={`note-item ${
                   selectedNoteId === note.id ? "selected" : ""
-                }`}
+                } ${theme}`}
                 onClick={() => onNoteSelect(note.id)}
               >
-                <div className="note-meta">
+                <div className={`note-meta ${theme}`}>
                   {editableNoteId === note.id ? (
                     <>
                       <input
@@ -96,20 +105,22 @@ const NotesListView: React.FC<NotesListViewProps> = ({
                         value={titleInput}
                         className={`edit-title-input ${
                           error ? "input-error" : ""
-                        }`}
+                        } ${theme}`}
                         onChange={(e) => setTitleInput(e.target.value)}
                         onBlur={() => handleTitleBlur(note.id)}
                         onClick={(e) => e.stopPropagation()}
                         autoFocus
                       />
-                      {error && <p className="error-message">{error}</p>}
+                      {error && (
+                        <p className={`error-message ${theme}`}>{error}</p>
+                      )}
                     </>
                   ) : (
-                    <div className="title-edit-wrapper">
-                      <h3 className="note-title">{note.title}</h3>
+                    <div className={`title-edit-wrapper ${theme}`}>
+                      <h3 className={`note-title ${theme}`}>{note.title}</h3>
                       <FontAwesomeIcon
                         icon={faEdit}
-                        className="edit-title-icon"
+                        className={`note-action-icon ${theme}`}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleTitleClick(note);
@@ -119,7 +130,7 @@ const NotesListView: React.FC<NotesListViewProps> = ({
                   )}
                 </div>
                 <button
-                  className="delete-note-button"
+                  className={`delete-note-button ${theme}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     onDeleteNote(note.id);
@@ -127,7 +138,7 @@ const NotesListView: React.FC<NotesListViewProps> = ({
                 >
                   <FontAwesomeIcon
                     icon={faTrash}
-                    className="sidebar-action-icon"
+                    className={`note-action-icon ${theme}`}
                   />
                 </button>
               </li>
