@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -27,6 +27,15 @@ interface Note {
   title: string;
   content: string;
 }
+
+// Debounce utility to prevent rapid function execution
+const debounce = (func: Function, delay: number) => {
+  let timer: NodeJS.Timeout;
+  return (...args: any) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => func(...args), delay);
+  };
+};
 
 const NoteEditor: React.FC = () => {
   const [notesList, setNotesList] = useState<any[]>([]);
@@ -127,6 +136,7 @@ const NoteEditor: React.FC = () => {
     setCurrentNoteId(newNote.id);
     setCurrentNoteContent(newNote.content);
     setIsSidebarOpen(false); // Close sidebar after creation (optional)
+    setTitleInput(newNote.title);
   };
 
   // Switch between notes, saving the current one before loading another
@@ -141,6 +151,7 @@ const NoteEditor: React.FC = () => {
     if (selectedNote) {
       setCurrentNoteId(selectedNote.id);
       setCurrentNoteContent(selectedNote.content || "");
+      setTitleInput(selectedNote.title);
     }
 
     setIsSidebarOpen(false); // Close the sidebar (optional)
@@ -177,7 +188,7 @@ const NoteEditor: React.FC = () => {
     }
   };
 
-  const handleEditNoteTitle = (noteId: string, newTitle: string) => {
+  const handleEditNoteTitle = (noteId: any, newTitle: string) => {
     saveNoteTitle(noteId, newTitle).then(() => {
       setNotesList((prevNotes) =>
         prevNotes.map((note) =>
@@ -187,12 +198,23 @@ const NoteEditor: React.FC = () => {
     });
   };
 
-  const handleTitleBlur = (noteId: string) => {
-    if (titleInput.trim()) {
-      handleEditNoteTitle(noteId, titleInput.trim()); // Call prop to update title
-      setEditableNoteId(null); // Disable editing mode
-    } else {
-    }
+  // Debounced function to avoid saving too frequently
+  const debouncedSaveTitle = useCallback(
+    debounce((noteId: number, title: string) => {
+      if (title.trim()) {
+        handleEditNoteTitle(noteId, title.trim());
+        setEditableNoteId(null); // Exit editing mode
+      }
+    }, 300), // 300ms delay for debouncing
+    []
+  );
+
+  // Handle the title input change
+  const onTitleInputChange = (title: string) => {
+    setTitleInput(title);
+
+    // Only call the title save logic if there's actual input after a brief delay (debounced)
+    debouncedSaveTitle(currentNoteId, title);
   };
 
   // Theme change
@@ -300,35 +322,12 @@ const NoteEditor: React.FC = () => {
         <>
           <div className={`note-editor-container ${theme}`}>
             <div className={`note-title-wrapper ${theme}`}>
-              {editableNoteId === currentNoteId ? (
-                <>
-                  <input
-                    type="text"
-                    value={titleInput}
-                    className={`current-note-title  ${theme}`}
-                    onChange={(e) => setTitleInput(e.target.value)}
-                    onBlur={() => handleTitleBlur(currentNoteId)}
-                    onClick={(e) => e.stopPropagation()}
-                    autoFocus
-                  />
-                </>
-              ) : (
-                <>
-                  <h1 className={`current-note-title ${theme}`}>
-                    {currentNoteId
-                      ? notesList.find((note) => note.id === currentNoteId)
-                          ?.title
-                      : "No Note Selected"}
-                  </h1>
-                  <FontAwesomeIcon
-                    icon={faEdit}
-                    className={`note-action-icon ${theme}`}
-                    onClick={(e) => {
-                      handleTitleClick(currentNoteId);
-                    }}
-                  />
-                </>
-              )}
+              <input
+                type="text"
+                value={titleInput}
+                className={`current-note-title  ${theme}`}
+                onChange={(e) => onTitleInputChange(e.target.value)}
+              />
             </div>
 
             <ReactQuill

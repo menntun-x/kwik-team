@@ -582,7 +582,7 @@ input {
   line-height: 1.2; // Tighter line-height for a clean look
   transition: color var(--transition-speed);
   margin-right: 20px;
-
+  text-align: center;
   &.dark {
     color: var(--dark-text);
   }
