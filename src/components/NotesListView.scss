@@ -348,6 +348,7 @@
 .note-action-icon {
   color: var(--light-accent); // Theme-based accent color
   font-size: 18px;
+  cursor: pointer;
   &.dark {
     color: var(--dark-accent);
   }

@@ -18,6 +18,7 @@ import {
 import { getStoredTheme, saveTheme } from "../utils/theme";
 import { v4 as uuidv4 } from "uuid";
 import NotesListView from "./NotesListView";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
 const themes = ["dark", "light", "solarized", "high-contrast", "pastel"];
 
@@ -36,6 +37,8 @@ const NoteEditor: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<ReactQuill>(null);
+  const [editableNoteId, setEditableNoteId] = useState<string | null>(null);
+  const [titleInput, setTitleInput] = useState<string>("");
 
   useEffect(() => {
     getStoredTheme().then((storedTheme) => {
@@ -164,10 +167,14 @@ const NoteEditor: React.FC = () => {
     }
   };
 
-  // Theme change
-  const handleThemeChange = (newTheme: string) => {
-    setTheme(newTheme);
-    saveTheme(newTheme);
+  const handleTitleClick = (noteId: string | null) => {
+    if (noteId) {
+      const currentNote = notesList.find((note) => note.id === noteId);
+      if (currentNote) {
+        setEditableNoteId(currentNote.id);
+        setTitleInput(currentNote.title); // Initialize with the current note's title
+      }
+    }
   };
 
   const handleEditNoteTitle = (noteId: string, newTitle: string) => {
@@ -178,6 +185,20 @@ const NoteEditor: React.FC = () => {
         )
       );
     });
+  };
+
+  const handleTitleBlur = (noteId: string) => {
+    if (titleInput.trim()) {
+      handleEditNoteTitle(noteId, titleInput.trim()); // Call prop to update title
+      setEditableNoteId(null); // Disable editing mode
+    } else {
+    }
+  };
+
+  // Theme change
+  const handleThemeChange = (newTheme: string) => {
+    setTheme(newTheme);
+    saveTheme(newTheme);
   };
 
   const printNotes = () => {
@@ -279,11 +300,35 @@ const NoteEditor: React.FC = () => {
         <>
           <div className={`note-editor-container ${theme}`}>
             <div className={`note-title-wrapper ${theme}`}>
-              <h1 className={`current-note-title ${theme}`}>
-                {currentNoteId
-                  ? notesList.find((note) => note.id === currentNoteId)?.title
-                  : "No Note Selected"}
-              </h1>
+              {editableNoteId === currentNoteId ? (
+                <>
+                  <input
+                    type="text"
+                    value={titleInput}
+                    className={`current-note-title  ${theme}`}
+                    onChange={(e) => setTitleInput(e.target.value)}
+                    onBlur={() => handleTitleBlur(currentNoteId)}
+                    onClick={(e) => e.stopPropagation()}
+                    autoFocus
+                  />
+                </>
+              ) : (
+                <>
+                  <h1 className={`current-note-title ${theme}`}>
+                    {currentNoteId
+                      ? notesList.find((note) => note.id === currentNoteId)
+                          ?.title
+                      : "No Note Selected"}
+                  </h1>
+                  <FontAwesomeIcon
+                    icon={faEdit}
+                    className={`note-action-icon ${theme}`}
+                    onClick={(e) => {
+                      handleTitleClick(currentNoteId);
+                    }}
+                  />
+                </>
+              )}
             </div>
 
             <ReactQuill

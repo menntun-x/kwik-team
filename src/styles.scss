@@ -53,6 +53,12 @@ body {
   overflow: hidden;
 }
 
+input {
+  border: none;
+  outline: none;
+  background: inherit;
+}
+
 /* Sidebar styles */
 .sidebar {
   position: fixed;
@@ -538,6 +544,9 @@ body {
   text-align: center; // Center-align the title for a cleaner look
   transition: background-color var(--transition-speed),
     border-color var(--transition-speed), box-shadow var(--transition-speed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &.dark {
     background-color: var(--dark-bg);
@@ -572,6 +581,7 @@ body {
   letter-spacing: 1px; // Slight spacing for readability
   line-height: 1.2; // Tighter line-height for a clean look
   transition: color var(--transition-speed);
+  margin-right: 20px;
 
   &.dark {
     color: var(--dark-text);
