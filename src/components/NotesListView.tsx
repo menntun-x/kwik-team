@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
-import { faPlusCircle, faStickyNote } from "@fortawesome/free-solid-svg-icons";
+import { faStickyNote } from "@fortawesome/free-solid-svg-icons";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import "./NotesListView.scss";
 
@@ -65,10 +65,6 @@ const NotesListView: React.FC<NotesListViewProps> = ({
               className={`create-note-button ${theme}`}
               onClick={onCreateNewNote}
             >
-              <FontAwesomeIcon
-                icon={faPlusCircle}
-                className={`note-action-icon ${theme}`}
-              />{" "}
               Create Your First Note
             </button>
           </div>
@@ -81,10 +77,6 @@ const NotesListView: React.FC<NotesListViewProps> = ({
               className={`create-note-button ${theme}`}
               onClick={onCreateNewNote}
             >
-              <FontAwesomeIcon
-                icon={faPlusCircle}
-                className={`note-action-icon ${theme}`}
-              />{" "}
               Create New Note
             </button>
           </div>
