@@ -1,0 +1,468 @@
+.notes-list-view {
+  padding: 1rem;
+  background: var(--light-bg); // Use theme background
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+  overflow-y: auto;
+  height: 100vh;
+  scrollbar-width: none;
+  &.dark {
+    background: var(--dark-bg);
+  }
+  &.solarized {
+    background: var(--solarized-bg);
+  }
+  &.high-contrast {
+    background: var(--high-contrast-bg);
+  }
+  &.pastel {
+    background: var(--pastel-bg);
+  }
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--light-border);
+    border-radius: 2px;
+
+    &.dark {
+      background: var(--dark-border);
+    }
+    &.solarized {
+      background: var(--solarized-border);
+    }
+    &.high-contrast {
+      background: var(--high-contrast-border);
+    }
+    &.pastel {
+      background: var(--pastel-border);
+    }
+  }
+
+  .notes-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--light-bg); // Use theme background
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+
+    &.dark {
+      background: var(--dark-bg);
+    }
+    &.solarized {
+      background: var(--solarized-bg);
+    }
+    &.high-contrast {
+      background: var(--high-contrast-bg);
+    }
+    &.pastel {
+      background: var(--pastel-bg);
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--light-text); // Use theme text color
+      &.dark {
+        color: var(--dark-text);
+      }
+      &.solarized {
+        color: var(--solarized-text);
+      }
+      &.high-contrast {
+        color: var(--high-contrast-text);
+      }
+      &.pastel {
+        color: var(--pastel-text);
+      }
+    }
+  }
+
+  .notes-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    .delete-note-button {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      padding: 8px;
+      border-radius: 50%;
+      transition: background-color var(--transition-speed), transform 0.2s ease;
+
+      &:hover {
+        background-color: var(--light-border);
+
+        &.dark {
+          background-color: var(--dark-border);
+        }
+        &.solarized {
+          background-color: var(--solarized-border);
+        }
+        &.high-contrast {
+          background-color: var(--high-contrast-border);
+        }
+        &.pastel {
+          background-color: var(--pastel-border);
+        }
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+
+    .note-item {
+      background-color: var(--light-bg); // Use theme background
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      position: relative;
+
+      &.dark {
+        background-color: var(--dark-bg);
+      }
+      &.solarized {
+        background-color: var(--solarized-bg);
+      }
+      &.high-contrast {
+        background-color: var(--high-contrast-bg);
+      }
+      &.pastel {
+        background-color: var(--pastel-bg);
+      }
+
+      &.selected {
+        border-left: 4px solid var(--light-accent);
+        background: var(--light-toolbar-bg);
+
+        &.dark {
+          border-left-color: var(--dark-accent);
+          background: var(--dark-toolbar-bg);
+        }
+        &.solarized {
+          border-left-color: var(--solarized-accent);
+          background: var(--solarized-toolbar-bg);
+        }
+        &.high-contrast {
+          border-left-color: var(--high-contrast-accent);
+          background: var(--high-contrast-toolbar-bg);
+        }
+        &.pastel {
+          border-left-color: var(--pastel-accent);
+          background: var(--pastel-toolbar-bg);
+        }
+      }
+
+      &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      }
+
+      .note-meta {
+        flex: 1;
+        display: flex;
+        align-items: center;
+
+        .edit-title-input {
+          width: 100%;
+          padding: 0.5rem;
+          font-size: 1.2rem;
+          border: none;
+          outline: none;
+          background-color: var(--light-bg);
+          color: var(--light-text);
+          &:hover,
+          &:focus {
+            border: none;
+            outline: none;
+          }
+
+          &.input-error {
+            border-color: var(--light-accent); // Theme-based error color
+            background-color: var(--light-bg); // Use theme background
+          }
+
+          &.dark {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+          }
+          &.solarized {
+            background-color: var(--solarized-bg);
+            color: var(--solarized-text);
+          }
+          &.high-contrast {
+            background-color: var(--high-contrast-bg);
+            color: var(--high-contrast-text);
+          }
+          &.pastel {
+            background-color: var(--pastel-bg);
+            color: var(--pastel-text);
+          }
+        }
+
+        .error-message {
+          color: var(--light-accent); // Error message color from theme
+          font-size: 11px;
+          margin-top: 0.25rem;
+          position: absolute;
+          left: 1rem;
+          bottom: -12px;
+          &.dark {
+            color: var(--dark-accent);
+          }
+          &.solarized {
+            color: var(--solarized-accent);
+          }
+          &.high-contrast {
+            color: var(--high-contrast-accent);
+          }
+          &.pastel {
+            color: var(--pastel-accent);
+          }
+        }
+
+        .title-edit-wrapper {
+          display: flex;
+          align-items: center;
+
+          .note-title {
+            font-size: 1.2rem;
+            color: var(--light-text); // Theme-based text color
+            font-weight: 500;
+            margin: 0 20px 0 0;
+            &.dark {
+              color: var(--dark-text);
+            }
+            &.solarized {
+              color: var(--solarized-text);
+            }
+            &.high-contrast {
+              color: var(--high-contrast-text);
+            }
+            &.pastel {
+              color: var(--pastel-text);
+            }
+          }
+
+          .edit-title-icon {
+            margin-left: 0.5rem;
+            color: var(--light-accent); // Theme-based icon color
+            font-size: 1rem;
+            cursor: pointer;
+            transition: color 0.2s ease-in-out;
+
+            &:hover {
+              color: var(--light-hover-accent); // Hover color from theme
+            }
+
+            &.dark {
+              color: var(--dark-accent);
+            }
+            &.solarized {
+              color: var(--solarized-accent);
+            }
+            &.high-contrast {
+              color: var(--high-contrast-accent);
+            }
+            &.pastel {
+              color: var(--pastel-accent);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.create-note-button {
+  background: linear-gradient(
+    135deg,
+    var(--light-accent),
+    var(--light-hover-accent)
+  );
+  color: var(--light-text); // Use theme button color
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s ease-in-out;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+  animation: fadeInUp 0.8s ease-out;
+
+  &:hover {
+    background: linear-gradient(
+      135deg,
+      var(--light-hover-accent),
+      var(--light-accent)
+    );
+    transform: translateY(-3px);
+  }
+
+  &.dark {
+    background: linear-gradient(
+      135deg,
+      var(--dark-accent),
+      var(--dark-hover-accent)
+    );
+  }
+  &.solarized {
+    background: linear-gradient(
+      135deg,
+      var(--solarized-accent),
+      var(--solarized-hover-accent)
+    );
+  }
+  &.high-contrast {
+    background: linear-gradient(
+      135deg,
+      var(--high-contrast-accent),
+      var(--high-contrast-hover-accent)
+    );
+  }
+  &.pastel {
+    background: linear-gradient(
+      135deg,
+      var(--pastel-accent),
+      var(--pastel-hover-accent)
+    );
+  }
+}
+
+.note-action-icon {
+  color: var(--light-accent); // Theme-based accent color
+  font-size: 18px;
+  cursor: pointer;
+  &.dark {
+    color: var(--dark-accent);
+  }
+  &.solarized {
+    color: var(--solarized-accent);
+  }
+  &.high-contrast {
+    color: var(--high-contrast-accent);
+  }
+  &.pastel {
+    color: var(--pastel-accent);
+  }
+}
+
+.no-notes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  background: var(--light-bg); /* Use theme background */
+  padding: 3rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: fadeIn 0.5s ease-in-out;
+  width: 100%;
+
+  &.dark {
+    background: var(--dark-bg);
+  }
+  &.solarized {
+    background: var(--solarized-bg);
+  }
+  &.high-contrast {
+    background: var(--high-contrast-bg);
+  }
+  &.pastel {
+    background: var(--pastel-bg);
+  }
+
+  .no-notes-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .no-notes-icon {
+      font-size: 4rem;
+      color: var(--light-accent); /* Theme-based icon color */
+      margin-bottom: 1rem;
+      animation: bounce 1s infinite alternate;
+
+      &.dark {
+        color: var(--dark-accent);
+      }
+      &.solarized {
+        color: var(--solarized-accent);
+      }
+      &.high-contrast {
+        color: var(--high-contrast-accent);
+      }
+      &.pastel {
+        color: var(--pastel-accent);
+      }
+    }
+
+    .no-notes-text {
+      font-size: 1.4rem;
+      color: var(--light-text); /* Theme-based text color */
+      margin-bottom: 1.5rem;
+      animation: fadeIn 1s ease-in-out;
+      &.dark {
+        color: var(--dark-text);
+      }
+      &.solarized {
+        color: var(--solarized-text);
+      }
+      &.high-contrast {
+        color: var(--high-contrast-text);
+      }
+      &.pastel {
+        color: var(--pastel-text);
+      }
+    }
+  }
+}
+
+// Keyframe animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  to {
+    transform: translateY(-10px);
+  }
+}
